@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var logoutButton: Button
     lateinit var firebaseAuth: FirebaseAuth
 
-    val REQUEST_FINE_LOCATION_CODE = 1
+    val REQUEST_FINE_LOCATION_CODE = 0
+    val REQUEST_AUDIO_RECORD_CODE = 1
 
 
 
@@ -29,8 +30,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_FINE_LOCATION_CODE)
+        //requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+          //      REQUEST_FINE_LOCATION_CODE)
+        requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUEST_AUDIO_RECORD_CODE)
 
 
         firebaseAuth = FirebaseAuth.getInstance()

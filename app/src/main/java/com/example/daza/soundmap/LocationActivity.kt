@@ -18,6 +18,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import android.arch.lifecycle.Observer
+import android.provider.MediaStore
+import com.example.daza.soundmap.utils.AudioHelper
 
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -27,7 +29,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val GEOFIRE_REF = GeoFire(DB_REFERENCE)
 
     lateinit var elobutton: Button
-
+    lateinit var helper: AudioHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,9 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        helper = AudioHelper(this)
+        helper.recordAudio(true)
 
         elobutton = findViewById(R.id.elo_button)
         elobutton.setOnClickListener {

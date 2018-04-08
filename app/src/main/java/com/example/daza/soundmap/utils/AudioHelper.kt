@@ -52,21 +52,22 @@ class AudioHelper(val context: Context){
     fun recordAudio(isCalibrationNeeded: Boolean = false){
         if (isBufferSizeCorrect){
             thread {
+                val amplitudeFromSharedPreferences = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
+                Log.i(TAG, "Amplitude saved in shared preferences: $amplitudeFromSharedPreferences")
                 val audioBuffer = ByteArray(MIN_BUFFER_SIZE)
                 val audioRecord = AudioRecord(MediaRecorder.AudioSource.DEFAULT, SAMPLE_RATE,
                         AudioFormat.CHANNEL_IN_MONO,
                         AudioFormat.ENCODING_PCM_16BIT, MIN_BUFFER_SIZE)
                 if (audioRecord.state== AudioRecord.STATE_INITIALIZED){
                     audioRecord.startRecording()
+                    isRecording = true
                     launch {
-                        isRecording = true
                         delay(RECORD_TIME, TimeUnit.MILLISECONDS)
                         isRecording = false
                     }
                     Log.i(TAG, "Recording started")
                     while(isRecording){
                         if(isCalibrationNeeded){
-                            Log.i(TAG, "Calibration started")
                             var sum: Double = 0.0
                             val readLength= audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
                             for (i in 0 until readLength){
@@ -74,20 +75,22 @@ class AudioHelper(val context: Context){
                             }
                             if(readLength >0) {
                                 val minAmplitude: Double = (Math.sqrt(sum / readLength))
-                                var savedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
-                                if (savedAmplitude == 0.0) {
-                                    savedAmplitude = minAmplitude
-                                } else if (savedAmplitude > minAmplitude) {
-                                    sharedPreferences.edit().putFloat(MIN_RMS_VALUE, minAmplitude.toFloat()).apply()
-                                    Log.i(TAG, "Current MIN_RMS_VALUE: $minAmplitude")
-                                }
+                                Log.i(TAG, "Current minAmplitude $minAmplitude")
+                                val savedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
+                               if (savedAmplitude > minAmplitude) {
+                                   sharedPreferences.edit().putFloat(MIN_RMS_VALUE, minAmplitude.toFloat()).apply()
+                                   val newSavedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
+                                   Log.i(TAG, "New saved amplitude $newSavedAmplitude")
+                               }
+
                             }
                         }
-                        val readLength= audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
+                        //val readLength= audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
                     }
                     //TODO add A-weight filtering to audioBuffer
                     audioRecord.stop()
                     audioRecord.release()
+                    Log.d(TAG, "Recording stopped")
                 }
                 else{
                     Log.e(TAG, "Audio record state is not initialized")
