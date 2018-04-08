@@ -15,12 +15,12 @@ import kotlin.concurrent.thread
 /**
  * Created by daza on 08.04.18.
  */
-class AudioHelper(val context: Context){
+class AudioHelper(val context: Context) {
     val TAG = "AudioHelper"
 
     val RECORD_TIME = 5000L
     val SAMPLE_RATE = 44100
-    val MIN_RMS = 4.8253787224504133E-5
+    //val MIN_RMS = 4.8253787224504133E-5
     val B_COEFFICIENT = doubleArrayOf(0.169994948147430,
             0.280415310498794,
             -1.120574766348363,
@@ -47,10 +47,12 @@ class AudioHelper(val context: Context){
     val PREFS_FILENAME = "com.example.dawid.soundmeter.prefs"
     val MIN_RMS_VALUE = "com.example.dawid.soundmeter.calibratedvalue"
     val sharedPreferences = context.getSharedPreferences(PREFS_FILENAME, Context.MODE_PRIVATE)
+    val MIN_RMS = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
 
 
-    fun recordAudio(isCalibrationNeeded: Boolean = false){
-        if (isBufferSizeCorrect){
+    //TODO Investigate dB values
+    fun recordAudio(isCalibrationNeeded: Boolean = false) {
+        if (isBufferSizeCorrect) {
             thread {
                 val amplitudeFromSharedPreferences = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
                 Log.i(TAG, "Amplitude saved in shared preferences: $amplitudeFromSharedPreferences")
@@ -58,7 +60,7 @@ class AudioHelper(val context: Context){
                 val audioRecord = AudioRecord(MediaRecorder.AudioSource.DEFAULT, SAMPLE_RATE,
                         AudioFormat.CHANNEL_IN_MONO,
                         AudioFormat.ENCODING_PCM_16BIT, MIN_BUFFER_SIZE)
-                if (audioRecord.state== AudioRecord.STATE_INITIALIZED){
+                if (audioRecord.state == AudioRecord.STATE_INITIALIZED) {
                     audioRecord.startRecording()
                     isRecording = true
                     launch {
@@ -66,43 +68,45 @@ class AudioHelper(val context: Context){
                         isRecording = false
                     }
                     Log.i(TAG, "Recording started")
-                    while(isRecording){
-                        if(isCalibrationNeeded){
+                    while (isRecording) {
+                        if (isCalibrationNeeded) {
                             var sum: Double = 0.0
-                            val readLength= audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
-                            for (i in 0 until readLength){
+                            val readLength = audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
+                            Log.i(TAG, "READ LEN $readLength")
+                            for (i in 0 until readLength) {
                                 sum += audioBuffer[i] * audioBuffer[i]
                             }
-                            if(readLength >0) {
+                            if (readLength > 0) {
                                 val minAmplitude: Double = (Math.sqrt(sum / readLength))
+                                val dBcurrent = Math.log10(minAmplitude / MIN_RMS)
                                 Log.i(TAG, "Current minAmplitude $minAmplitude")
                                 val savedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
-                               if (savedAmplitude > minAmplitude) {
-                                   sharedPreferences.edit().putFloat(MIN_RMS_VALUE, minAmplitude.toFloat()).apply()
-                                   val newSavedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
-                                   Log.i(TAG, "New saved amplitude $newSavedAmplitude")
-                               }
+                                if (savedAmplitude > minAmplitude) {
+                                    sharedPreferences.edit().putFloat(MIN_RMS_VALUE, minAmplitude.toFloat()).apply()
+                                    val newSavedAmplitude = sharedPreferences.getFloat(MIN_RMS_VALUE, 0.0F).toDouble()
+                                    Log.i(TAG, "New saved amplitude $newSavedAmplitude")
+                                }
 
                             }
+                        } else {
+                            audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
+                            val dBMaxValue = filterAudioBuffer(audioBuffer)
+                            Log.i(TAG, "Max dB RMS: ${dBMaxValue} dB")
                         }
-                        //val readLength= audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
                     }
-                    //TODO add A-weight filtering to audioBuffer
                     audioRecord.stop()
                     audioRecord.release()
                     Log.d(TAG, "Recording stopped")
-                }
-                else{
+                } else {
                     Log.e(TAG, "Audio record state is not initialized")
                 }
             }
-        }
-        else {
+        } else {
             Log.d(TAG, "Buffer size is not correct")
         }
     }
 
-    fun filterAudioBuffer(input: ByteArray){
+    fun filterAudioBuffer(input: ByteArray): Double {
 
         // input ByteArray to ShortArray (16 bit)
         val shortBuffer = ByteBuffer.wrap(input).asShortBuffer()
@@ -111,7 +115,7 @@ class AudioHelper(val context: Context){
 
         // ShortArray to DoubleArray
         var doubleArray = DoubleArray(shortArray.size)
-        for (i in shortArray.indices){
+        for (i in shortArray.indices) {
             doubleArray[i] = java.lang.Short.reverseBytes(shortArray[i]).toDouble() / 0x8000
         }
 
@@ -119,14 +123,15 @@ class AudioHelper(val context: Context){
         doubleArray = applyWeightingFilter(A_COEFFICIENT, B_COEFFICIENT, doubleArray)
 
         // Get RMS in dB
-        val batchArray = doubleArray.asSequence().chunked(MIN_BUFFER_SIZE/2)
+        val batchArray = doubleArray.asSequence().chunked(MIN_BUFFER_SIZE / 2)
         val rmsList = arrayListOf<Double>()
-        for (item in batchArray){
-            val sum: Double =  item.sumByDouble { it * it }
-            val rms = 20*Math.log10(Math.sqrt(sum/item.size)/ MIN_RMS)
+        for (item in batchArray) {
+            val sum: Double = item.sumByDouble { it * it }
+            val rms = 20 * Math.log10(Math.sqrt(sum / item.size) / MIN_RMS)
             rmsList.add(rms)
         }
-
+        val maxRms = rmsList.max()
+        return maxRms!!
     }
 
     fun applyWeightingFilter(a: DoubleArray, b: DoubleArray, signal: DoubleArray): DoubleArray {

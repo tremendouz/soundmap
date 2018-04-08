@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO Fix checking permissions
         //requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
           //      REQUEST_FINE_LOCATION_CODE)
         requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),
