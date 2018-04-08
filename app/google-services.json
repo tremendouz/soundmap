@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "65008340692",
+    "firebase_url": "https://soundmap-6200b.firebaseio.com",
+    "project_id": "soundmap-6200b",
+    "storage_bucket": "soundmap-6200b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65008340692:android:a30bc2b511d75666",
+        "android_client_info": {
+          "package_name": "com.example.daza.soundmap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "65008340692-13arfcqm8fda61mt487kvrorjgojdq2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.daza.soundmap",
+            "certificate_hash": "aa25b25de5af206ef240d6b6356454b9c9d64e97"
+          }
+        },
+        {
+          "client_id": "65008340692-23vmebe81c1ndafntjoujhje50duadqj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDsXdk241CROE2pYOZtSYl5ipTsucW3lw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "65008340692-23vmebe81c1ndafntjoujhje50duadqj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
