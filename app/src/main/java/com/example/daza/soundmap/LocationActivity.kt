@@ -18,8 +18,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import android.arch.lifecycle.Observer
-import android.provider.MediaStore
+import android.widget.Switch
 import com.example.daza.soundmap.utils.AudioHelper
+import com.firebase.geofire.GeoQuery
+import com.firebase.geofire.GeoQueryEventListener
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.toast
 
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -29,6 +33,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     val GEOFIRE_REF = GeoFire(DB_REFERENCE)
 
     lateinit var elobutton: Button
+    lateinit var narabutton: Switch
     lateinit var helper: AudioHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +44,14 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        helper = AudioHelper(this)
-        helper.recordAudio(true)
+        //helper = AudioHelper(this)
+        //helper.recordAudio()
 
         elobutton = findViewById(R.id.elo_button)
+
+        /*************************************************************************/
+        /*GEOFIRE*/
+
         elobutton.setOnClickListener {
 
             val itemId = DB_REFERENCE.child("measurements").push().key
@@ -50,28 +59,89 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
             DB_REFERENCE.child("measurements").child(itemId).child("userID").setValue(50)
 
             val geofire = GeoFire(DB_REFERENCE.child("measurementLocation"))
-            val firelistener = object : GeoFire.CompletionListener{
-                override fun onComplete(key: String?, error: DatabaseError?) {
-                    Log.d("ELO", "ELO 420 wysylamy geo FIRE")
+
+            val firelistener = GeoFire.CompletionListener { key, error ->
+                if (error != null) {
+                    Log.e(TAG, "Error: $error. Location was not successfully saved on the server")
+
+                } else {
+                    Log.d(TAG, "Location was successfully saved on the server. Used key: $key")
+
                 }
             }
-            geofire.setLocation(itemId, GeoLocation(1.0, 2.0), firelistener)
+            geofire.setLocation(itemId, GeoLocation(52.2207651, 21.0096579), firelistener)
         }
 
+        //GET Z FIREBASE
+//        val geoFire = GeoFire(FirebaseDatabase.getInstance().reference.child("measurementLocation"))
+//
+//        val geoQuery = geoFire.queryAtLocation(GeoLocation(-34.0, 151.0), 200.0)
+//        geoQuery.addGeoQueryEventListener(object : GeoQueryEventListener {
+//            override fun onGeoQueryReady() {
+//                Log.i(TAG, "Geo Query: READY")
+//                longToast("Ready")
+//            }
+//
+//            override fun onKeyEntered(key: String?, location: GeoLocation?) {
+//                Log.i(TAG, "Key: $key, location: (${location?.longitude},${location?.latitude}) is within range")
+//            }
+//
+//            override fun onKeyMoved(key: String?, location: GeoLocation?) {
+//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            }
+//
+//            override fun onKeyExited(key: String?) {
+//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            }
+//
+//            override fun onGeoQueryError(error: DatabaseError?) {
+//                Log.e(TAG, "Geo Query error: $error")
+//            }
+//
+//        })
+
+
+        /************************************************************************/
+        /*GEOFIRE*/
+
+        narabutton = findViewById(R.id.switch1)
+
+
+        //val audioMeasureLiveData = ViewModelProviders.of(this).get(MeasurementViewModel::class.java).getAudioLevel(this)
+        //audioMeasureLiveData.observe(this, Observer<Int> {  level -> Log.d(TAG, "Audio data: $level dB") })
+
+
+
+
+        val firebaseViewModel = ViewModelProviders.of(this)
+                .get(FirebaseQueryViewModel::class.java)
+
+                val x = firebaseViewModel.getDataSnapshotLiveData()
+                x.observe(this, Observer<DataSnapshot> { dataSnapshot ->
+                    Log.d(TAG, "Data from firebase ${dataSnapshot?.child("noise")}")
+                })
 
         ViewModelProviders.of(this)
                 .get(LocationViewModel::class.java)
                 .getLocation(this)
                 .observe(this, Observer<Location> { location ->
-                    Log.d(TAG, "Latitude: ${location?.latitude} Longitude: ${location?.longitude}")
+                    firebaseViewModel.geoQuery.center = GeoLocation(location!!.latitude, location.longitude)
+                    Log.d(TAG, "Latitude: ${location?.latitude} Longitude: ${location?.longitude}"
+
+                    )
+                    //audioMeasureLiveData.audioHelper.recordAudio(false)
+
                 })
 
-        ViewModelProviders.of(this)
-                .get(FirebaseQueryViewModel::class.java)
-                .getDataSnapshotLiveData()
-                .observe(this, Observer<DataSnapshot> {
-                    dataSnapshot ->  Log.d(TAG, "Data from firebase $dataSnapshot")
-                })
+        narabutton.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked){
+                firebaseViewModel.geoQuery.radius = 0.0
+            }
+            else{
+                firebaseViewModel.geoQuery.radius = 200.0
+            }
+        }
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -82,4 +152,5 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
+
 }

@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.location.Location
 import android.os.Looper
+import android.util.Log
 import com.google.android.gms.location.*
 
 /**
@@ -12,6 +13,8 @@ import com.google.android.gms.location.*
 class LocationLiveData(val context: Context) : LiveData<Location>() {
     val LOCATION_REQUEST_INTERVAL: Long = 5000
     val LOCATION_REQUEST_FASTEST_INTERVAL: Long = 2000
+
+    val TAG = LocationLiveData::class.java.simpleName
 
     lateinit var fusedLocationClient: FusedLocationProviderClient
     val locationRequest by lazy { LocationRequest.create() }
@@ -38,6 +41,7 @@ class LocationLiveData(val context: Context) : LiveData<Location>() {
     override fun onInactive() {
         super.onInactive()
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        Log.d(TAG, "Location listener inactive")
     }
 
 
