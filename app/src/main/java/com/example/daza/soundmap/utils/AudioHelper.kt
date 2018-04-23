@@ -6,6 +6,7 @@ import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
 import android.util.Log
+import com.example.daza.soundmap.AudioMeasureLiveData
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import java.nio.ByteBuffer
@@ -69,10 +70,10 @@ class AudioHelper(val context: Context) {
                 if (audioRecord.state == AudioRecord.STATE_INITIALIZED) {
                     audioRecord.startRecording()
                     isRecording = true
-                    launch {
-                        delay(RECORD_TIME, TimeUnit.MILLISECONDS)
-                        isRecording = false
-                    }
+//                    launch {
+//                        delay(RECORD_TIME, TimeUnit.MILLISECONDS)
+//                        isRecording = false
+//                    }
                     Log.i(TAG, "Recording started")
                     while (isRecording) {
                         if (isCalibrationNeeded) {
@@ -98,11 +99,13 @@ class AudioHelper(val context: Context) {
                         } else {
                             audioRecord.read(audioBuffer, 0, MIN_BUFFER_SIZE)
                             val dBMaxValue = filterAudioBuffer(audioBuffer)
-                            if (dBMaxValue > dbInit ){
-                                dbInit = dBMaxValue
-                                Log.d(TAG, "Last calculated value ${dbInit}")
+                            tmpEndedAt = dBMaxValue
+//                            if (dBMaxValue > dbInit ){
+//                                dbInit = dBMaxValue
+//                                Log.d(TAG, "Last calculated value ${dbInit}")
+//                            }
 
-                            }
+
                         }
                     }
                     audioRecord.stop()
