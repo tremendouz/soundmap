@@ -1,12 +1,22 @@
 package com.example.daza.soundmap
 
 import android.content.Context
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 
 /**
@@ -18,6 +28,23 @@ import android.view.ViewGroup
  * create an instance of this fragment.
  */
 class WeekForecastFragment : Fragment() {
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewAdapter: DayForecastAdapter
+    private lateinit var gridLayoutManager: RecyclerView.LayoutManager
+    private lateinit var button: Button
+    val TAG = DayForecastFragment::class.java.simpleName
+    val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
+    //TODO PAMIETAC O ZMIANIE
+    val exclude = "currently,minutely,hourly"
+    val units = "si"
+    //temp
+    val temp_latng = "52.2207651, 21.0096579"
+    val geocoder by lazy { Geocoder(this.context) }
+    lateinit var disposable: Disposable
+
+    val weatherForecastService by lazy { WeatherForecastService.create() }
+
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -31,12 +58,38 @@ class WeekForecastFragment : Fragment() {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
+        recyclerViewAdapter = DayForecastAdapter()
+        gridLayoutManager = GridLayoutManager(this.context, 2)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_week_forecast, container, false)
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout_day)
+        swipeRefreshLayout.apply {
+            this.setOnRefreshListener {
+                performQuery()
+            }
+        }
+        recyclerView = view.findViewById(R.id.recycler_view_week_forecast)
+        recyclerView.adapter = recyclerViewAdapter
+        recyclerView.layoutManager = gridLayoutManager
+
         return view
+    }
+
+    fun performQuery() {
+        disposable = weatherForecastService.checkDayForecast(API_KEY, temp_latng, exclude, units)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ result ->
+                    swipeRefreshLayout.isRefreshing = false
+                    Log.d(TAG, "OnNext: ${result.daily.data}")
+                    recyclerViewAdapter.forecastList = result.daily.data
+                    recyclerViewAdapter.notifyDataSetChanged()
+                },
+                        { error -> Log.e(TAG, "OnError: {${error.message}}") },
+                        { Log.d(TAG, "OnComplete: API call completed") })
     }
 
     // TODO: Rename method, update argument and hook method into UI event
