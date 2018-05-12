@@ -18,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import org.jetbrains.anko.email
 
 
 class LoginActivity : AppCompatActivity() {
@@ -58,13 +59,14 @@ class LoginActivity : AppCompatActivity() {
         }
 
         val emailObservable = RxTextView.textChanges(textEmail)
-        emailObservable.map { text -> isValidEmail(text.toString()) }
+                emailObservable.map { text -> isValidEmail(text.toString()) }
                 .skip(1)
                 .debounce(debounceTime, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe { isValid -> validateEmail(isValid) }
 
+
         val passwordObservable = RxTextView.textChanges(textPassword)
-        passwordObservable.map { text -> isValidPassword(text.toString()) }
+                passwordObservable.map { text -> isValidPassword(text.toString()) }
                 .skip(1)
                 .debounce(debounceTime, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe { isValid -> validatePassword(isValid) }
@@ -122,6 +124,10 @@ class LoginActivity : AppCompatActivity() {
         super.onStop()
         textEmail.text.clear()
         textPassword.text.clear()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
 

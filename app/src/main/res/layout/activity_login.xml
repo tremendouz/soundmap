@@ -35,9 +35,10 @@
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_email"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/text_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/text_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

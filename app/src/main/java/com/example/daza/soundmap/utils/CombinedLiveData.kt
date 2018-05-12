@@ -10,5 +10,5 @@ import io.reactivex.internal.operators.observable.ObservableFromArray
  * Created by daza on 22.04.18.
  */
 class CombinedLiveData: MediatorLiveData<Location>() {
-    
+
 }

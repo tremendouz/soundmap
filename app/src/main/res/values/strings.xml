@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SoundMap</string>
+    <string name="app_name">SilentPaths</string>
     <string name="title_activity_maps">Map</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
@@ -11,5 +11,17 @@
     <string name="text_login">Welcome</string>
     <string name="text_registration">Create new account</string>
     <string name="error_input_email">Invalid email address</string>
+
+    <string name="nav_bar_item_1">Noise map</string>
+    <string name="nav_bar_item_2">My trips</string>
+    <string name="nav_bar_item_3">Saved trips</string>
+    <string name="nav_bar_item_4">Wind forecast</string>
+    <string name="nav_bar_item_5">Account info</string>
+    <string name="nav_bar_item_6">Settings</string>
+    <string name="nav_bar_item_7">About</string>
+    <string name="nav_bar_item_8">Logout</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
 

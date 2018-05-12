@@ -19,8 +19,6 @@ class FirebaseQueryLiveData(query: GeoQuery?) : LiveData<DataSnapshot>() {
 
     val valueListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot?) {
-//            val noise = dataSnapshot!!.child("noise")
-//            val userId = dataSnapshot.child("userId")
             value = dataSnapshot
             Log.i(TAG, "Got data from user: $dataSnapshot")
         }

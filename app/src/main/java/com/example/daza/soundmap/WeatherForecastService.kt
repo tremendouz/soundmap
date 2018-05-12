@@ -17,12 +17,27 @@ import retrofit2.http.Query
 
 interface WeatherForecastService {
     @GET("forecast/{API_KEY}/{latLng}")
-    fun checkForecast(
+    fun checkCurrentForecast(
             @Path("API_KEY") API_KEY: String,
             @Path("latLng") latLng: String,
             @Query("exclude") exclude: String,
             @Query("units") units: String
-    ): Observable<ForecastModel>
+    ): Observable<CurrentForecastModel>
+    @GET("forecast/{API_KEY}/{latLng}")
+    fun checkHourForecast(
+            @Path("API_KEY") API_KEY: String,
+            @Path("latLng") latLng: String,
+            @Query("exclude") exclude: String,
+            @Query("units") units: String
+    ): Observable<HourByHourForecastModel>
+    @GET("forecast/{API_KEY}/{latLng}")
+    fun checkDayForecast(
+            @Path("API_KEY") API_KEY: String,
+            @Path("latLng") latLng: String,
+            @Query("exclude") exclude: String,
+            @Query("units") units: String
+    ): Observable<DailyForecastModel>
+
 
     companion object {
         fun create(): WeatherForecastService {

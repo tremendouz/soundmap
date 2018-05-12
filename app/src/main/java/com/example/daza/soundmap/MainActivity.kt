@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         logoutButton = findViewById(R.id.button_logout)
         logoutButton.setOnClickListener {
             //firebaseAuth.signOut()
-            val intent = Intent(this@MainActivity, LocationActivity::class.java)
+            val intent = Intent(this@MainActivity, WeatherForecastActivity::class.java)
             startActivity(intent)
         }
 

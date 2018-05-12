@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_bar_item_1"
+            android:icon="@drawable/google_maps"
+            android:title="@string/nav_bar_item_1" />
+        <item
+            android:id="@+id/nav_bar_item_2"
+            android:icon="@drawable/bike"
+            android:title="@string/nav_bar_item_2" />
+        <item
+            android:id="@+id/nav_bar_item_3"
+            android:icon="@drawable/content_save"
+            android:title="@string/nav_bar_item_3" />
+        <item
+            android:id="@+id/nav_bar_item_4"
+            android:icon="@drawable/cloud"
+            android:title="@string/nav_bar_item_4" />
+        <item
+            android:id="@+id/nav_bar_item_5"
+            android:icon="@drawable/information"
+            android:title="@string/nav_bar_item_5" />
+        <item
+            android:id="@+id/nav_bar_item_6"
+            android:icon="@drawable/settings"
+            android:title="@string/nav_bar_item_6" />
+        <item
+            android:id="@+id/nav_bar_item_7"
+            android:icon="@drawable/information_variant"
+            android:title="@string/nav_bar_item_7" />
+        <item
+            android:id="@+id/nav_bar_item_8"
+            android:icon="@drawable/exit_to_app"
+            android:title="@string/nav_bar_item_8" />
+
+    </group>
+</menu>
+
+
+    <!--<item--><!--android:id="@+id/nav_slideshow"--><!--android:icon="@drawable/ic_menu_slideshow"--><!--android:title="@string/slideshow" />-->
