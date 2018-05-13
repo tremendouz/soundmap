@@ -21,6 +21,18 @@
     <string name="nav_bar_item_7">About</string>
     <string name="nav_bar_item_8">Logout</string>
 
+    <string name="app_author">Dawid Zawrotny</string>
+    <string name="author">Author</string>
+    <string name="school">Warsaw University of Technology</string>
+    <string name="email_author">D.Zawrotny@elka.pw.edu.pl</string>
+    <string name="about">About</string>
+    <string name="app_info">Noise pollution is a growing problem.
+        In Europe, 65% of the population is exposed to unhealthy levels of transportation noise.
+        30% of Americans complained of noise and 40% of those would like to change their place of residence because of this.
+        To address this issue SilenPaths application was created.
+        Smartphones and their microphones are used as sound level meters which will be then used to monitor the noise levels around the urban areas.
+        </string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
