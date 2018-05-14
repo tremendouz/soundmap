@@ -32,6 +32,9 @@ import java.util.concurrent.TimeUnit
  * create an instance of this fragment.
  */
 class CurrentForecastFragment : Fragment() {
+    val CURRENT_WEATHER = "com.example.dawid.soundmeter.current_weather"
+    //val sharedPreferences = activity.getSharedPreferences(CURRENT_WEATHER, Context.MODE_PRIVATE)
+
 
     val TAG =CurrentForecastFragment::class.java.simpleName
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
@@ -63,6 +66,7 @@ class CurrentForecastFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("TAG xxxxxxxxx", "ON CREATE FRAGMENT")
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
@@ -95,7 +99,10 @@ class CurrentForecastFragment : Fragment() {
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        Log.d("tah", "ON RESUME FRAG")
+    }
 
     override fun onDetach() {
         super.onDetach()
@@ -106,13 +113,38 @@ class CurrentForecastFragment : Fragment() {
         return geocoder.getFromLocation(latitude, longitude, 1)[0].getAddressLine(0)
     }
 
+
+    fun saveDataInSharedPref(string: String){
+        //val editor = sharedPreferences.edit()
+        //editor.putString(CURRENT_WEATHER, string).apply()
+    }
+
+    fun fillTextViewsWithSavedData(string: String){
+        val data = string.split(" ")
+        windSpeed.text = data[0]
+        windBurst.text = data[1]
+        windDirection.text = data[2]
+        address.text = data[3]
+        lastCall.text = data[4]
+
+    }
     fun fillTextViews(data: CurrentForecastModel){
         val currently = data.currently
-        windSpeed.text = currently.windSpeed.toString() + " m/s"
-        windBurst.text = currently.windGust.toString() + " m/s"
-        windDirection.text = currently.windBearing.toCompass()
-        address.text = getAddressFromGeo(data.latitude, data.longitude)
-        lastCall.text = convertTimestampToDate(currently.time.toLong()) }
+
+        val windSpeedString = currently.windSpeed.toString() + " m/s"
+        val windBurstString  = currently.windGust.toString() + " m/s"
+        val windDirString = currently.windBearing.toCompass()
+        val addressString = getAddressFromGeo(data.latitude, data.longitude)
+        val lastCallString = convertTimestampToDate(currently.time.toLong())
+
+        windSpeed.text = windSpeedString
+        windBurst.text = windBurstString
+        windDirection.text = windDirString
+        address.text = addressString
+        lastCall.text = lastCallString
+        //saveDataInSharedPref(windSpeedString+" "+windBurstString+" "+windDirString+" "+addressString+" "+lastCallString)
+
+    }
 
     fun Int.toCompass(): String{
         val directions = arrayOf("N","NNE", "NE","ENE", "E", "ESE", "SE", "SSE",

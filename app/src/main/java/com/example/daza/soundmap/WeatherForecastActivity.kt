@@ -28,22 +28,6 @@ class WeatherForecastActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
 
     val TAG = WeatherForecastService::class.java.simpleName
-    val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
-    //TODO PAMIETAC O ZMIANIE
-    val exclude = "hourly,minutely,daily"
-    val units = "si"
-    //temp
-    val temp_latng = "52.2207651, 21.0096579"
-
-//    lateinit var webutton: Button
-//    lateinit var image: ImageView
-    val geocoder by lazy { Geocoder(this) }
-
-
-    val weatherForecastService by lazy { WeatherForecastService.create() }
-
-
-    lateinit var disposable: Disposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,15 +35,22 @@ class WeatherForecastActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
 
         val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            // set item as selected to persist highlight
-            menuItem.isChecked = true
-            performQuery()
-            // close drawer when item is tapped
-            drawerLayout.closeDrawers()
+        navigationView.setNavigationItemSelectedListener {
+            when(it.itemId){
+                R.id.nav_bar_item_7 -> {
+                    it.isChecked = true
+                    drawerLayout.closeDrawers()}
 
-            // Add code here to update the UI based on the item selected
-            // For example, swap UI fragments here
+            }
+//            menuItem ->
+//            // set item as selected to persist highlight
+//            menuItem.isChecked = true
+//            performQuery()
+//            // close drawer when item is tapped
+//            drawerLayout.closeDrawers()
+//
+//            // Add code here to update the UI based on the item selected
+//            // For example, swap UI fragments here
 
             true
         }
@@ -93,24 +84,9 @@ class WeatherForecastActivity : AppCompatActivity() {
         }
     }
 
-    fun getAddressFromGeo(latitude: Double, longitude: Double): String{
-        return geocoder.getFromLocation(latitude, longitude, 1)[0].getAddressLine(0)
-    }
-
-    fun performQuery() {
-        disposable = weatherForecastService.checkCurrentForecast(API_KEY, temp_latng, exclude, units)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result ->
-                    Log.d(TAG, "OnNext: ${result.currently} ${getAddressFromGeo(result.latitude,result.longitude)}")
-                },
-                        { error -> Log.e(TAG, "OnError: {${error.message}}") },
-                        { Log.d(TAG, "OnComplete: API call completed") })
-    }
 
     override fun onPause() {
         super.onPause()
-        disposable.dispose()
-        Log.d(TAG, "Disposing observable ...")
+
     }
 }

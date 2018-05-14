@@ -30,7 +30,6 @@ import io.reactivex.schedulers.Schedulers
 class WeekForecastFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAdapter: DayForecastAdapter
-    private lateinit var gridLayoutManager: RecyclerView.LayoutManager
     private lateinit var button: Button
     val TAG = DayForecastFragment::class.java.simpleName
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
@@ -59,7 +58,6 @@ class WeekForecastFragment : Fragment() {
             mParam2 = arguments.getString(ARG_PARAM2)
         }
         recyclerViewAdapter = DayForecastAdapter()
-        gridLayoutManager = GridLayoutManager(this.context, 2)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,7 +71,7 @@ class WeekForecastFragment : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recycler_view_week_forecast)
         recyclerView.adapter = recyclerViewAdapter
-        recyclerView.layoutManager = gridLayoutManager
+        recyclerView.layoutManager = GridLayoutManager(this.context, 2)
 
         return view
     }
