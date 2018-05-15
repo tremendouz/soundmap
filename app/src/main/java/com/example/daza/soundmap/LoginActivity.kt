@@ -18,16 +18,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import android.Manifest
+import android.content.pm.PackageManager
+
+
 import org.jetbrains.anko.email
+import org.jetbrains.anko.longToast
 
 
 class LoginActivity : AppCompatActivity() {
 
+    val REQUEST_PERMISSIONS_CODE = 0
+
 
     val TAG = LoginActivity::class.java.simpleName
-
     lateinit var firebaseAuth: FirebaseAuth
-
     lateinit var goToRegisterButton: Button
     lateinit var textEmail: EditText
     lateinit var textPassword: EditText
@@ -35,38 +40,30 @@ class LoginActivity : AppCompatActivity() {
     lateinit var inputPassword: TextInputLayout
     lateinit var loginButton: Button
     lateinit var restorePasswordButton: Button
-
     val debounceTime: Long = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
-
-
         firebaseAuth = FirebaseAuth.getInstance()
-
         textEmail = findViewById(R.id.text_email)
         inputEmail = findViewById(R.id.input_layout_email)
-
         textPassword = findViewById(R.id.text_password)
         inputPassword = findViewById(R.id.input_layout_password)
-
         loginButton = findViewById(R.id.button_login)
         loginButton.setOnClickListener {
             loginUser(textEmail.text.toString(), textPassword.text.toString())
         }
 
         val emailObservable = RxTextView.textChanges(textEmail)
-                emailObservable.map { text -> isValidEmail(text.toString()) }
+        emailObservable.map { text -> isValidEmail(text.toString()) }
                 .skip(1)
                 .debounce(debounceTime, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe { isValid -> validateEmail(isValid) }
 
-
         val passwordObservable = RxTextView.textChanges(textPassword)
-                passwordObservable.map { text -> isValidPassword(text.toString()) }
+        passwordObservable.map { text -> isValidPassword(text.toString()) }
                 .skip(1)
                 .debounce(debounceTime, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe { isValid -> validatePassword(isValid) }
@@ -80,13 +77,11 @@ class LoginActivity : AppCompatActivity() {
                 })
         combinedObservable.subscribe { isValid -> isValidForm(isValid) }
 
-
         val firebaseAuth = FirebaseAuth.getInstance()
         if (firebaseAuth.currentUser != null) {
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
             startActivity(intent)
         }
-
 
         goToRegisterButton = findViewById(R.id.button_registration)
         goToRegisterButton.setOnClickListener {
@@ -130,11 +125,9 @@ class LoginActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-
     fun isValidEmail(email: String): Boolean {
         return email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
-
 
     fun validateEmail(valid: Boolean) {
         if (!valid)
@@ -142,7 +135,6 @@ class LoginActivity : AppCompatActivity() {
         inputEmail.isErrorEnabled = !valid
 
     }
-
 
     fun isValidPassword(password: String): Boolean {
         return password.isNotEmpty() && password.length > 6
@@ -171,6 +163,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
     }
+
 
     fun Context.toast(message: CharSequence) =
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

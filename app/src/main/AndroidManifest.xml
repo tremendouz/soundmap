@@ -44,9 +44,11 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".RegistrationActivity" />
         <activity android:name=".LocationActivity" />
-        <activity android:name=".WeatherForecastActivity"
-            android:theme="@style/AppThemeNoActionBar">
-        </activity>
+        <activity
+            android:name=".WeatherForecastActivity"
+            android:theme="@style/AppThemeNoActionBar"/>
+        <activity android:name=".Main2Activity"
+            android:theme="@style/AppThemeNoActionBar"/>
     </application>
 
 </manifest>
