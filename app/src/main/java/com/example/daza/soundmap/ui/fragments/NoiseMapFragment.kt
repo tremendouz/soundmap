@@ -1,4 +1,4 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.fragments
 
 import android.content.Context
 import android.net.Uri
@@ -7,21 +7,27 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import com.example.daza.soundmap.BuildConfig
+import android.widget.LinearLayout
 
+import com.example.daza.soundmap.R
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import java.lang.ref.WeakReference
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [AboutFragment.OnFragmentInteractionListener] interface
+ * [NoiseMapFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [AboutFragment.newInstance] factory method to
+ * Use the [NoiseMapFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class AboutFragment : Fragment() {
+class NoiseMapFragment : Fragment(), OnMapReadyCallback {
 
-    lateinit var appVersion: TextView
+    lateinit var mMap: GoogleMap
+
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -37,14 +43,14 @@ class AboutFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater!!.inflate(R.layout.fragment_about, container, false)
-        appVersion = view.findViewById(R.id.txt_app_version)
-        appVersion.text = "App version: " + BuildConfig.VERSION_NAME
+        val view = inflater.inflate(R.layout.fragment_noise_map, container, false)
+        val mapFragment= childFragmentManager.findFragmentById((R.id.map_new)) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         return view
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
@@ -58,6 +64,18 @@ class AboutFragment : Fragment() {
         super.onDetach()
         mListener = null
     }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.uiSettings.isMapToolbarEnabled = true
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
+
+    }
+
+    
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -85,16 +103,19 @@ class AboutFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment AboutFragment.
+         * @return A new instance of fragment NoiseMapFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): AboutFragment {
-            val fragment = AboutFragment()
+        fun newInstance(param1: String, param2: String): NoiseMapFragment {
+            val fragment = NoiseMapFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)
             fragment.arguments = args
             return fragment
         }
+
+        private val INSTANCE = NoiseMapFragment()
+        fun getInstance() = INSTANCE
     }
-}// Required empty public constructor
+}

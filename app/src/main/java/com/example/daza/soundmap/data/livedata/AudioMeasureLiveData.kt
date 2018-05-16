@@ -1,4 +1,4 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.data.livedata
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData

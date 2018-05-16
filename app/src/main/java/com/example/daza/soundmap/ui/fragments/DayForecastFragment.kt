@@ -1,6 +1,5 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.fragments
 
-import android.content.Context
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
@@ -13,12 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import com.example.daza.soundmap.data.adapters.HourForecastAdapter
+import com.example.daza.soundmap.R
+import com.example.daza.soundmap.utils.WeatherForecastService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -79,7 +78,8 @@ class DayForecastFragment : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recycler_view_hour_forecast)
         recyclerView.adapter = recyclerViewAdapter
-        recyclerView.layoutManager = linearLayoutManager
+        if (recyclerView.layoutManager != linearLayoutManager){
+        recyclerView.layoutManager = linearLayoutManager}
 
 
         return view

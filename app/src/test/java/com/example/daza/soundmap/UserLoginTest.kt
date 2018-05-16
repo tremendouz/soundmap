@@ -3,6 +3,9 @@ package com.example.daza.soundmap
 import android.content.Intent
 import android.widget.Button
 import android.widget.EditText
+import com.example.daza.soundmap.ui.activities.LoginActivity
+import com.example.daza.soundmap.ui.activities.MainActivity
+import com.example.daza.soundmap.ui.activities.RegistrationActivity
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith

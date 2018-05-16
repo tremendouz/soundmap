@@ -1,10 +1,12 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.data.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.daza.soundmap.data.models.Data
+import com.example.daza.soundmap.R
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

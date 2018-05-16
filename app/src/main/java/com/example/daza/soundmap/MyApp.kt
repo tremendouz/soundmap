@@ -11,8 +11,6 @@ class MyApp: Application() {
     override fun onCreate(){
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        // TODO test if it speeds up map loading
         MapsInitializer.initialize(this)
-
     }
 }

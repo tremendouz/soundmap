@@ -1,4 +1,4 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.activities
 
 import android.arch.lifecycle.LiveDataReactiveStreams
 import android.arch.lifecycle.ViewModelProviders
@@ -7,44 +7,32 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
 import android.graphics.Color
 import android.location.Geocoder
-import android.provider.ContactsContract
 import android.widget.Switch
 import android.widget.TextView
+import com.example.daza.soundmap.viewmodels.FirebaseQueryViewModel
+import com.example.daza.soundmap.viewmodels.LocationViewModel
+import com.example.daza.soundmap.viewmodels.MeasurementViewModel
+import com.example.daza.soundmap.R
 import com.example.daza.soundmap.utils.AudioHelper
-import com.firebase.geofire.GeoQuery
-import com.firebase.geofire.GeoQueryEventListener
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.PolylineOptions
 import io.reactivex.Flowable
-import org.jetbrains.anko.longToast
-import org.jetbrains.anko.toast
-import java.util.*
-import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import io.reactivex.internal.operators.flowable.FlowableWithLatestFrom
-import io.reactivex.internal.operators.observable.ObservableWithLatestFrom
 
 import org.reactivestreams.Publisher
+import java.lang.ref.WeakReference
 
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     val TAG = LocationActivity::class.java.simpleName
-
 
     lateinit var elobutton: Button
     lateinit var narabutton: Switch
@@ -77,8 +65,6 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     @Override
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_location)

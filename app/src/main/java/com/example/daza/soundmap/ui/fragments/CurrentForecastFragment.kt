@@ -1,6 +1,5 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.fragments
 
-import android.content.Context
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
@@ -11,14 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.daza.soundmap.data.models.CurrentForecastModel
+import com.example.daza.soundmap.R
+import com.example.daza.soundmap.utils.WeatherForecastService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.experimental.launch
-import org.jetbrains.anko.toast
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -35,8 +33,7 @@ class CurrentForecastFragment : Fragment() {
     val CURRENT_WEATHER = "com.example.dawid.soundmeter.current_weather"
     //val sharedPreferences = activity.getSharedPreferences(CURRENT_WEATHER, Context.MODE_PRIVATE)
 
-
-    val TAG =CurrentForecastFragment::class.java.simpleName
+    val TAG = CurrentForecastFragment::class.java.simpleName
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
     //TODO PAMIETAC O ZMIANIE
     val exclude = "hourly,minutely,daily"
@@ -66,7 +63,6 @@ class CurrentForecastFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("TAG xxxxxxxxx", "ON CREATE FRAGMENT")
         if (arguments != null) {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
@@ -89,6 +85,7 @@ class CurrentForecastFragment : Fragment() {
         windDirection = view.findViewById(R.id.text_wind_direction)
         address = view.findViewById(R.id.text_geo_address)
         lastCall = view.findViewById(R.id.text_last_time_call)
+
         return view
     }
 
@@ -101,7 +98,7 @@ class CurrentForecastFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("tah", "ON RESUME FRAG")
+
     }
 
     override fun onDetach() {
@@ -209,5 +206,8 @@ class CurrentForecastFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+
+        private val INSTANCE = CurrentForecastFragment()
+        fun getInstance() = INSTANCE
     }
 }// Required empty public constructor

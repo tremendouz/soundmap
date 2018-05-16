@@ -1,7 +1,8 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.example.daza.soundmap.R
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

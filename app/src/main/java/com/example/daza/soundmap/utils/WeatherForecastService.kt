@@ -1,5 +1,8 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.utils
 
+import com.example.daza.soundmap.data.models.CurrentForecastModel
+import com.example.daza.soundmap.data.models.DailyForecastModel
+import com.example.daza.soundmap.data.models.HourByHourForecastModel
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

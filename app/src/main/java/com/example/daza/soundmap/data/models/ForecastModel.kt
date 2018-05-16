@@ -1,4 +1,4 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.data.models
 
 /**
  * Created by daza on 08.05.18.
@@ -27,12 +27,12 @@ data class Flags(
 
 
 data class HourByHourForecastModel(
-    val latitude: Double,
-    val longitude: Double,
-    val timezone: String,
-    val hourly: Hourly,
-    val flags: Flags,
-    val offset: Int
+        val latitude: Double,
+        val longitude: Double,
+        val timezone: String,
+        val hourly: Hourly,
+        val flags: Flags,
+        val offset: Int
 )
 
 data class Hourly(
@@ -49,12 +49,12 @@ data class Data(
 
 
 data class DailyForecastModel(
-    val latitude: Double,
-    val longitude: Double,
-    val timezone: String,
-    val daily: Daily,
-    val flags: Flags,
-    val offset: Int
+        val latitude: Double,
+        val longitude: Double,
+        val timezone: String,
+        val daily: Daily,
+        val flags: Flags,
+        val offset: Int
 )
 
 data class Daily(

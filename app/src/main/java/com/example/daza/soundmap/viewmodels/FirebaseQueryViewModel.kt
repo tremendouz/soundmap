@@ -1,13 +1,13 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.viewmodels
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import android.location.Location
 import android.util.Log
+import com.example.daza.soundmap.data.livedata.FirebaseQueryLiveData
 import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 /**

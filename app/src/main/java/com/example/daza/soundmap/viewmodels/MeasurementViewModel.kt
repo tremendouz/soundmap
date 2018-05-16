@@ -1,7 +1,8 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.viewmodels
 
 import android.arch.lifecycle.ViewModel
 import android.content.Context
+import com.example.daza.soundmap.data.livedata.AudioMeasureLiveData
 
 /**
  * Created by daza on 11.04.18.

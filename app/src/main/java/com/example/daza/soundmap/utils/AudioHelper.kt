@@ -6,11 +6,7 @@ import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
 import android.util.Log
-import com.example.daza.soundmap.AudioMeasureLiveData
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import java.nio.ByteBuffer
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 /**

@@ -1,29 +1,28 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.fragments
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
-import android.support.v4.view.PagerAdapter
-import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.example.daza.soundmap.BuildConfig
+import com.example.daza.soundmap.R
 
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [ForecastFragment.OnFragmentInteractionListener] interface
+ * [AboutFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [ForecastFragment.newInstance] factory method to
+ * Use the [AboutFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ForecastFragment : Fragment() {
-    private lateinit var viewPager: ViewPager
-    private lateinit var tabLayout: TabLayout
-    private lateinit var pagerAdapter: PagerAdapter
+class AboutFragment : Fragment() {
+
+    lateinit var appVersion: TextView
+
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
     private var mParam2: String? = null
@@ -36,20 +35,16 @@ class ForecastFragment : Fragment() {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
-        pagerAdapter = ForecastPagerAdapter(childFragmentManager)
-
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_forecast, container, false)
-        viewPager = view.findViewById(R.id.view_pager)
-        viewPager.adapter = pagerAdapter
-        tabLayout = view.findViewById(R.id.tabs)
-        tabLayout.setupWithViewPager(viewPager)
+        val view = inflater!!.inflate(R.layout.fragment_about, container, false)
+        appVersion = view.findViewById(R.id.txt_app_version)
+        appVersion.text = "App version: " + BuildConfig.VERSION_NAME
         return view
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
@@ -58,14 +53,6 @@ class ForecastFragment : Fragment() {
         }
     }
 
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if (context is OnFragmentInteractionListener) {
-//            mListener = context
-//        } else {
-//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-//        }
-//    }
 
     override fun onDetach() {
         super.onDetach()
@@ -98,11 +85,11 @@ class ForecastFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment ForecastFragment.
+         * @return A new instance of fragment AboutFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): ForecastFragment {
-            val fragment = ForecastFragment()
+        fun newInstance(param1: String, param2: String): AboutFragment {
+            val fragment = AboutFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)

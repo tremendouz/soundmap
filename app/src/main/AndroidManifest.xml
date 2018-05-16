@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".ui.activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,15 +39,15 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".ui.activities.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".RegistrationActivity" />
-        <activity android:name=".LocationActivity" />
+        <activity android:name=".ui.activities.MainActivity" />
+        <activity android:name=".ui.activities.RegistrationActivity" />
+        <activity android:name=".ui.activities.LocationActivity" />
         <activity
             android:name=".WeatherForecastActivity"
             android:theme="@style/AppThemeNoActionBar"/>
-        <activity android:name=".Main2Activity"
+        <activity android:name=".ui.activities.Main2Activity"
             android:theme="@style/AppThemeNoActionBar"/>
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.daza.soundmap
+package com.example.daza.soundmap.ui.activities
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.daza.soundmap.R
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -18,12 +19,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import android.Manifest
-import android.content.pm.PackageManager
-
-
-import org.jetbrains.anko.email
-import org.jetbrains.anko.longToast
 
 
 class LoginActivity : AppCompatActivity() {
