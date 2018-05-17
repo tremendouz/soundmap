@@ -76,6 +76,7 @@ class WeekForecastFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycler_view_week_forecast)
         recyclerView.adapter = recyclerViewAdapter
         recyclerView.layoutManager = GridLayoutManager(this.context, 2)
+        performQuery()
 
         return view
     }

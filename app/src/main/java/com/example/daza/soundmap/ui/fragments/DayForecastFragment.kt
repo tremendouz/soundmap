@@ -60,7 +60,7 @@ class DayForecastFragment : Fragment() {
             mParam2 = arguments.getString(ARG_PARAM2)
         }
         recyclerViewAdapter = HourForecastAdapter()
-        Log.d("ON CREATE", "DAY")
+        performQuery()
 
     }
 

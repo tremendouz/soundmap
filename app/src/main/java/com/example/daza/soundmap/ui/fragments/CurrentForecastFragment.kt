@@ -39,6 +39,7 @@ class CurrentForecastFragment : Fragment() {
     val temp_latng = "52.2207651, 21.0096579"
     val geocoder by lazy { Geocoder(this.context) }
     lateinit var disposable: Disposable
+    var savedList: CurrentForecastModel? = null
 
     val weatherForecastService by lazy { WeatherForecastService.create() }
 
@@ -65,6 +66,8 @@ class CurrentForecastFragment : Fragment() {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
+        performQuery()
+
 
     }
 
@@ -85,6 +88,9 @@ class CurrentForecastFragment : Fragment() {
         address = view.findViewById(R.id.text_geo_address)
         lastCall = view.findViewById(R.id.text_last_time_call)
 
+        if(savedList!=null){
+            fillTextViews(savedList!!)
+        }
         return view
     }
 
@@ -150,6 +156,7 @@ class CurrentForecastFragment : Fragment() {
                     swipeRefreshLayout.isRefreshing = false
                     Log.d(TAG, "OnNext: ${result.currently} ${getAddressFromGeo(result.latitude, result.longitude)}")
                     fillTextViews(result)
+                    savedList = result
                 },
                         { error -> Log.e(TAG, "OnError: {${error.message}}") },
                         { Log.d(TAG, "OnComplete: API call completed") })

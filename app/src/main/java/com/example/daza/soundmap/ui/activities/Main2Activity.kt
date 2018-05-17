@@ -6,6 +6,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
@@ -22,7 +23,6 @@ import com.google.android.gms.maps.MapFragment
 class Main2Activity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
-    private val fragmentManager by lazy { supportFragmentManager }
     private val TAG = Main2Activity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,46 +54,54 @@ class Main2Activity : AppCompatActivity() {
                     R.id.nav_sound_map -> NoiseMapFragment()
                     R.id.nav_my_trips -> NoiseMapFragment()
                     R.id.nav_saved_trips -> NoiseMapFragment()
-                    R.id.nav_forecast -> ForecastFragment.getInstance()
+                    R.id.nav_forecast -> ForecastFragment()
                     R.id.nav_acc_info -> ForecastFragment()
                     R.id.nav_settings -> ForecastFragment()
                     R.id.nav_app_info -> AboutFragment()
                     else -> NoiseMapFragment()
                 }
 
-                if (fragment is NoiseMapFragment) {
-                    replaceMapFragment(fragment)
-                } else {
-                    fragmentManager
-                            .beginTransaction()
-                            .replace(R.id.main_activity_frame, fragment)
-                            .commit()
-                }
+                cacheFragment(fragment)
                 it.isChecked = true
                 drawerLayout.closeDrawers()
                 true
             }
         }
 
-        replaceMapFragment(NoiseMapFragment())
+        cacheFragment(NoiseMapFragment())
         navigationView.menu.getItem(0).isChecked = true
+
+    }
+
+    fun cacheFragment(fragment: android.support.v4.app.Fragment) {
+        Log.d("Caching", "Working with ${fragment.javaClass.simpleName}")
+        var findFragment = supportFragmentManager.findFragmentByTag(fragment.javaClass.simpleName)
+        if (findFragment == null) {
+            Log.d("Caching", "Creating new instance of ${fragment.javaClass.simpleName}")
+            findFragment = fragment.javaClass.newInstance()
+        }
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.main_activity_frame, findFragment, fragment.javaClass.simpleName)
+                .addToBackStack(null)
+                .commit()
     }
 
 
     fun clearBackStack() {
         val backStackEntryCount = supportFragmentManager.backStackEntryCount
         if (backStackEntryCount > 0) {
-            val entry = fragmentManager.getBackStackEntryAt(0)
-            fragmentManager.popBackStack(entry.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            //fragmentManager.executePendingTransactions()
+            //val entry = supportFragmentManager.getBackStackEntryAt(0)
+            supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            supportFragmentManager.executePendingTransactions()
         }
     }
 
     fun replaceMapFragment(fragment: NoiseMapFragment) {
         val fragmentName = fragment::class.java.simpleName
-        val fragmentInBackStack = fragmentManager.popBackStackImmediate(fragmentName, 0)
+        val fragmentInBackStack = supportFragmentManager.popBackStackImmediate(fragmentName, 0)
         if (!fragmentInBackStack) {
-            fragmentManager.beginTransaction()
+            supportFragmentManager.beginTransaction()
+                    .setTransition(TRANSIT_FRAGMENT_FADE)
                     .replace(R.id.main_activity_frame, NoiseMapFragment.getInstance())
                     .addToBackStack(fragmentName)
                     .commit()
