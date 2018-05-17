@@ -17,6 +17,7 @@ import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.AboutFragment
 import com.example.daza.soundmap.ui.fragments.CurrentForecastFragment
 import com.example.daza.soundmap.ui.fragments.NoiseMapFragment
+import com.google.android.gms.maps.MapFragment
 
 class Main2Activity : AppCompatActivity() {
 
@@ -43,41 +44,43 @@ class Main2Activity : AppCompatActivity() {
 
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener {
-            if(it.itemId == R.id.nav_logout){
+            if (it.itemId == R.id.nav_logout) {
                 clearBackStack()
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 true
-            }
-            else {
+            } else {
                 var fragment = when (it.itemId) {
                     R.id.nav_sound_map -> NoiseMapFragment()
                     R.id.nav_my_trips -> NoiseMapFragment()
                     R.id.nav_saved_trips -> NoiseMapFragment()
-                    R.id.nav_forecast -> ForecastFragment()
+                    R.id.nav_forecast -> ForecastFragment.getInstance()
                     R.id.nav_acc_info -> ForecastFragment()
                     R.id.nav_settings -> ForecastFragment()
                     R.id.nav_app_info -> AboutFragment()
                     else -> NoiseMapFragment()
                 }
 
-                if (fragment is NoiseMapFragment){
+                if (fragment is NoiseMapFragment) {
                     replaceMapFragment(fragment)
+                } else {
+                    fragmentManager
+                            .beginTransaction()
+                            .replace(R.id.main_activity_frame, fragment)
+                            .commit()
                 }
-                else{
-                fragmentManager
-                        .beginTransaction()
-                        .replace(R.id.main_activity_frame, fragment)
-                        .commit()}
                 it.isChecked = true
                 drawerLayout.closeDrawers()
                 true
             }
         }
 
+        replaceMapFragment(NoiseMapFragment())
+        navigationView.menu.getItem(0).isChecked = true
     }
 
-    fun clearBackStack(){
+
+    fun clearBackStack() {
         val backStackEntryCount = supportFragmentManager.backStackEntryCount
         if (backStackEntryCount > 0) {
             val entry = fragmentManager.getBackStackEntryAt(0)
@@ -86,16 +89,17 @@ class Main2Activity : AppCompatActivity() {
         }
     }
 
-    fun replaceMapFragment(fragment: NoiseMapFragment){
+    fun replaceMapFragment(fragment: NoiseMapFragment) {
         val fragmentName = fragment::class.java.simpleName
         val fragmentInBackStack = fragmentManager.popBackStackImmediate(fragmentName, 0)
-        if (!fragmentInBackStack){
+        if (!fragmentInBackStack) {
             fragmentManager.beginTransaction()
                     .replace(R.id.main_activity_frame, NoiseMapFragment.getInstance())
                     .addToBackStack(fragmentName)
                     .commit()
         }
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

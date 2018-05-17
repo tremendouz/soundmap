@@ -14,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.example.daza.soundmap.data.adapters.DayForecastAdapter
 import com.example.daza.soundmap.R
+import com.example.daza.soundmap.data.models.CurrentForecastModel
+import com.example.daza.soundmap.data.models.Data
 import com.example.daza.soundmap.utils.WeatherForecastService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -31,7 +33,8 @@ import io.reactivex.schedulers.Schedulers
 class WeekForecastFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAdapter: DayForecastAdapter
-    private lateinit var button: Button
+
+
     val TAG = DayForecastFragment::class.java.simpleName
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
     //TODO PAMIETAC O ZMIANIE

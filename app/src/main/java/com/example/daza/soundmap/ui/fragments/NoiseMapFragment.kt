@@ -67,7 +67,7 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
+        mMap.isMyLocationEnabled =true
         mMap.uiSettings.isMapToolbarEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isCompassEnabled = true

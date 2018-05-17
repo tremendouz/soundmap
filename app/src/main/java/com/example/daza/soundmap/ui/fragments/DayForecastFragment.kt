@@ -32,8 +32,6 @@ class DayForecastFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerViewAdapter: HourForecastAdapter
-    private lateinit var linearLayoutManager: RecyclerView.LayoutManager
-    private lateinit var button: Button
     val TAG = DayForecastFragment::class.java.simpleName
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
     //TODO PAMIETAC O ZMIANIE
@@ -62,7 +60,7 @@ class DayForecastFragment : Fragment() {
             mParam2 = arguments.getString(ARG_PARAM2)
         }
         recyclerViewAdapter = HourForecastAdapter()
-        linearLayoutManager = LinearLayoutManager(this.context)
+        Log.d("ON CREATE", "DAY")
 
     }
 
@@ -78,8 +76,7 @@ class DayForecastFragment : Fragment() {
         }
         recyclerView = view.findViewById(R.id.recycler_view_hour_forecast)
         recyclerView.adapter = recyclerViewAdapter
-        if (recyclerView.layoutManager != linearLayoutManager){
-        recyclerView.layoutManager = linearLayoutManager}
+        recyclerView.layoutManager = LinearLayoutManager(activity)
 
 
         return view
