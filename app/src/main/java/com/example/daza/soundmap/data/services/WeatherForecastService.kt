@@ -1,4 +1,4 @@
-package com.example.daza.soundmap.utils
+package com.example.daza.soundmap.data.services
 
 import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.data.models.DailyForecastModel

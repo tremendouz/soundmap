@@ -96,18 +96,6 @@ class Main2Activity : AppCompatActivity() {
         }
     }
 
-    fun replaceMapFragment(fragment: NoiseMapFragment) {
-        val fragmentName = fragment::class.java.simpleName
-        val fragmentInBackStack = supportFragmentManager.popBackStackImmediate(fragmentName, 0)
-        if (!fragmentInBackStack) {
-            supportFragmentManager.beginTransaction()
-                    .setTransition(TRANSIT_FRAGMENT_FADE)
-                    .replace(R.id.main_activity_frame, NoiseMapFragment.getInstance())
-                    .addToBackStack(fragmentName)
-                    .commit()
-        }
-    }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.R
-import com.example.daza.soundmap.utils.WeatherForecastService
+import com.example.daza.soundmap.data.services.WeatherForecastService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

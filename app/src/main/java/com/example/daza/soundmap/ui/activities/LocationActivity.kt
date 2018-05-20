@@ -1,7 +1,6 @@
 package com.example.daza.soundmap.ui.activities
 
-import android.arch.lifecycle.LiveDataReactiveStreams
-import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.*
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +10,6 @@ import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.DataSnapshot
-import android.arch.lifecycle.Observer
 import android.graphics.Color
 import android.location.Geocoder
 import android.widget.Switch
@@ -137,7 +135,7 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
                 runOnUiThread {
                     val locationName = geocoder.getFromLocation(location.latitude, location.longitude, 1)
                     val addressLine = locationName[0].getAddressLine(0)
-                   circleTextView.text = addressLine
+                    circleTextView.text = addressLine
                 }
             }
 

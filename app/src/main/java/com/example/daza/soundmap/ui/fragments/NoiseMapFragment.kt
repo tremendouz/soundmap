@@ -1,20 +1,47 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.LiveDataReactiveStreams
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 
 import com.example.daza.soundmap.R
+import com.example.daza.soundmap.data.livedata.AudioMeasureLiveData
+import com.example.daza.soundmap.data.models.GeocodedWaypoint
+import com.example.daza.soundmap.data.services.GoogleDirectionsService
+import com.example.daza.soundmap.utils.reObserve
+import com.example.daza.soundmap.viewmodels.FirebaseQueryViewModel
+import com.example.daza.soundmap.viewmodels.LocationViewModel
+import com.example.daza.soundmap.viewmodels.MeasurementViewModel
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.database.DataSnapshot
+import io.reactivex.Flowable
+import io.reactivex.functions.BiFunction
+import org.reactivestreams.Publisher
 import java.lang.ref.WeakReference
+
+
+import com.google.maps.android.PolyUtil
+import io.reactivex.Scheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+
 
 /**
  * A simple [Fragment] subclass.
@@ -25,8 +52,22 @@ import java.lang.ref.WeakReference
  * create an instance of this fragment.
  */
 class NoiseMapFragment : Fragment(), OnMapReadyCallback {
+    val TAG = NoiseMapFragment::class.java.simpleName
+    val geocoder by lazy { Geocoder(activity) }
+    val MAP_PIXEL_WIDTH by lazy { mapFragment.view!!.measuredWidth.toDouble() }
+    val MAP_PIXEL_HEIGHT by lazy { mapFragment.view!!.measuredHeight.toDouble() }
+    val MAPS_API_KEY = "AIzaSyCpJlm0wGt6-Krzlw_C3DXXTTym4labm30"
+    val DIRECTION_MODE = "walking"
+    val ORIGIN = "52.15184,21.04156"
+    val DESTINATION = "52.14968,21.03401"
+    val WAYPOINTS = "52.14915,21.03976"
+    val googleDirectionsService by lazy { GoogleDirectionsService.create() }
 
+
+    lateinit var listOfGeoPoints: ArrayList<Location>
+    lateinit var mapFragment: SupportMapFragment
     lateinit var mMap: GoogleMap
+    lateinit var disposable: Disposable
 
 
     // TODO: Rename and change types of parameters
@@ -41,15 +82,44 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
+
+        listOfGeoPoints = arrayListOf()
+
+        val firebaseViewModel = ViewModelProviders.of(this)
+                .get(FirebaseQueryViewModel::class.java)
+        firebaseViewModel.getDataSnapshotLiveData()
+
+        val locationViewModel = ViewModelProviders.of(this)
+                .get(LocationViewModel::class.java)
+        val locationLiveData = locationViewModel.getLocation(activity)
+
+        val audioViewModel = ViewModelProviders.of(this)
+                .get(MeasurementViewModel::class.java)
+        val audioLiveData = audioViewModel.getAudioLevel(activity)
+
+        val audioLocationLiveData = transformLiveData(locationLiveData, audioLiveData)
+                .observe(this,
+                        Observer<Pair<Location, Int>> { pair ->
+                            if (!listOfGeoPoints.contains(pair!!.first)) {
+                                listOfGeoPoints.add(pair.first)
+                            }
+                            peformDirectionsApiCall(ORIGIN, DESTINATION, WAYPOINTS)
+                            Log.d(TAG, "Location list ${listOfGeoPoints.size}")
+                            Log.d(TAG, "Location: ${pair?.first?.latitude} ${pair?.first?.longitude}")
+                        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_noise_map, container, false)
-        val mapFragment= childFragmentManager.findFragmentById((R.id.map_new)) as SupportMapFragment
+        mapFragment = childFragmentManager.findFragmentById((R.id.map_new)) as SupportMapFragment
         mapFragment.getMapAsync(this)
         return view
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -65,16 +135,49 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
         mListener = null
     }
 
+    @SuppressWarnings("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.isMyLocationEnabled =true
-        mMap.uiSettings.isMapToolbarEnabled = true
+        mMap.isMyLocationEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isCompassEnabled = true
 
+        mMap.setOnCameraIdleListener {
+            val zoomLevel = mMap.cameraPosition.zoom
+            val metersPerPx = 0.33 * 156543.03392 * Math.cos(mMap.cameraPosition.target.latitude * Math.PI / 180) / Math.pow(2.0, zoomLevel.toDouble())
+            val kilometersPerPixel = metersPerPx / 1000
+            val queryRadius = 0.5 * Math.sqrt(MAP_PIXEL_HEIGHT * MAP_PIXEL_HEIGHT + MAP_PIXEL_WIDTH * MAP_PIXEL_WIDTH) * kilometersPerPixel
+
+        }
+
     }
 
-    
+    fun transformLiveData(locationLiveData: LiveData<Location>, audioLiveData: LiveData<Int>): LiveData<Pair<Location, Int>> {
+        val rxDataPublisher: Publisher<Int> = LiveDataReactiveStreams.toPublisher(
+                this, audioLiveData)
+
+        val rxLocationPublisher: Publisher<Location> = LiveDataReactiveStreams.toPublisher(
+                this, locationLiveData)
+
+        val rxFlowable: Flowable<Pair<Location, Int>> = Flowable.fromPublisher(rxLocationPublisher)
+                .withLatestFrom(
+                        rxDataPublisher, BiFunction { location, integer -> Pair(location, integer) })
+
+        return LiveDataReactiveStreams.fromPublisher(rxFlowable)
+    }
+
+    fun peformDirectionsApiCall(origin: String, destination: String, waypoints: String) {
+        disposable = googleDirectionsService.getEncodedPolyline(origin, destination, waypoints, mode = DIRECTION_MODE, key = MAPS_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ result ->
+                    Log.d(TAG, "$result")
+                    val toDraw = PolyUtil.decode(result.routes[0].overview_polyline.points)
+                    mMap.addPolyline(PolylineOptions().addAll(toDraw))
+                },
+                        { error -> Log.e(TAG, "OnError: {${error.message}}") },
+                        { Log.d(TAG, "OnComplete: API call completed") })
+    }
 
 
     /**
@@ -114,8 +217,5 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
             fragment.arguments = args
             return fragment
         }
-
-        private val INSTANCE = NoiseMapFragment()
-        fun getInstance() = INSTANCE
     }
 }
