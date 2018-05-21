@@ -57,10 +57,11 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
     val MAP_PIXEL_WIDTH by lazy { mapFragment.view!!.measuredWidth.toDouble() }
     val MAP_PIXEL_HEIGHT by lazy { mapFragment.view!!.measuredHeight.toDouble() }
     val MAPS_API_KEY = "AIzaSyCpJlm0wGt6-Krzlw_C3DXXTTym4labm30"
-    val DIRECTION_MODE = "walking"
-    val ORIGIN = "52.15184,21.04156"
-    val DESTINATION = "52.14968,21.03401"
-    val WAYPOINTS = "52.14915,21.03976"
+    val DIRECTION_MODE = "bicycling"
+    //val DIRECTION_MODE = "walking"
+    val ORIGIN = "52.150001400986284,21.03444099676267"
+    val DESTINATION = "52.14923774618937,21.042594912167942"
+    val WAYPOINTS = "52.151923646458364,21.038818361874974|52.151791988457184,21.037530901547825"
     val googleDirectionsService by lazy { GoogleDirectionsService.create() }
 
 
@@ -103,7 +104,7 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
                             if (!listOfGeoPoints.contains(pair!!.first)) {
                                 listOfGeoPoints.add(pair.first)
                             }
-                            peformDirectionsApiCall(ORIGIN, DESTINATION, WAYPOINTS)
+                            peformDirectionsApiCall(ORIGIN, DESTINATION, WAYPOINTS, DIRECTION_MODE)
                             Log.d(TAG, "Location list ${listOfGeoPoints.size}")
                             Log.d(TAG, "Location: ${pair?.first?.latitude} ${pair?.first?.longitude}")
                         })
@@ -166,8 +167,8 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
         return LiveDataReactiveStreams.fromPublisher(rxFlowable)
     }
 
-    fun peformDirectionsApiCall(origin: String, destination: String, waypoints: String) {
-        disposable = googleDirectionsService.getEncodedPolyline(origin, destination, waypoints, mode = DIRECTION_MODE, key = MAPS_API_KEY)
+    fun peformDirectionsApiCall(origin: String, destination: String, waypoints: String, mode: String) {
+        disposable = googleDirectionsService.getEncodedPolyline(origin, destination, waypoints, mode, key = MAPS_API_KEY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result ->

@@ -1,5 +1,6 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import com.example.daza.soundmap.data.adapters.DayForecastAdapter
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.services.WeatherForecastService
+import com.example.daza.soundmap.viewmodels.LocationViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -39,6 +41,8 @@ class WeekForecastFragment : Fragment() {
     val units = "si"
     //temp
     val temp_latng = "52.2207651, 21.0096579"
+    var isCreated = false
+    lateinit var currentLocation: String
     val geocoder by lazy { Geocoder(this.context) }
     lateinit var disposable: Disposable
 
@@ -59,6 +63,15 @@ class WeekForecastFragment : Fragment() {
             mParam2 = arguments.getString(ARG_PARAM2)
         }
         recyclerViewAdapter = DayForecastAdapter()
+        val vm = ViewModelProviders.of(parentFragment).get(LocationViewModel::class.java)
+                .getLocation(activity)
+                .observe(this, android.arch.lifecycle.Observer { location ->
+                    currentLocation = "${location!!.latitude}, ${location.longitude}"
+                    if (!isCreated) {
+                        performQuery(currentLocation)
+                        isCreated =true
+                    }
+                })
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -67,19 +80,18 @@ class WeekForecastFragment : Fragment() {
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout_day)
         swipeRefreshLayout.apply {
             this.setOnRefreshListener {
-                performQuery()
+                performQuery(currentLocation)
             }
         }
         recyclerView = view.findViewById(R.id.recycler_view_week_forecast)
         recyclerView.adapter = recyclerViewAdapter
         recyclerView.layoutManager = GridLayoutManager(this.context, 2)
-        performQuery()
 
         return view
     }
 
-    fun performQuery() {
-        disposable = weatherForecastService.checkDayForecast(API_KEY, temp_latng, exclude, units)
+    fun performQuery(currentLocation: String) {
+        disposable = weatherForecastService.checkDayForecast(API_KEY, currentLocation, exclude, units)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result ->

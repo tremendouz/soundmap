@@ -11,8 +11,8 @@ import com.google.android.gms.location.*
  * Created by daza on 08.04.18.
  */
 class LocationLiveData(val context: Context) : LiveData<Location>() {
-    val LOCATION_REQUEST_INTERVAL: Long = 15000
-    val LOCATION_REQUEST_FASTEST_INTERVAL: Long = 10000
+    var LOCATION_REQUEST_INTERVAL: Long = 15000
+    var LOCATION_REQUEST_FASTEST_INTERVAL: Long = 10000
 
     val TAG = LocationLiveData::class.java.simpleName
 
