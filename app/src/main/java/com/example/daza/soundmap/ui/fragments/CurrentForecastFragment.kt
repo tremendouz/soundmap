@@ -1,6 +1,8 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.location.Geocoder
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,6 +15,7 @@ import android.widget.TextView
 import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.services.WeatherForecastService
+import com.example.daza.soundmap.viewmodels.LocationViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -31,15 +34,17 @@ import java.util.concurrent.TimeUnit
  */
 class CurrentForecastFragment : Fragment() {
     val TAG = CurrentForecastFragment::class.java.simpleName
+    var isCreated = false
     val API_KEY = "6a8ff9e6413d444dfcf3ce2ac051e014"
     //TODO PAMIETAC O ZMIANIE
     val exclude = "hourly,minutely,daily"
     val units = "si"
     //temp
-    val temp_latng = "52.2207651, 21.0096579"
+    //val currentLocation = "52.2207651, 21.0096579"
     val geocoder by lazy { Geocoder(this.context) }
     lateinit var disposable: Disposable
     var savedList: CurrentForecastModel? = null
+    lateinit var currentLocation: String
 
     val weatherForecastService by lazy { WeatherForecastService.create() }
 
@@ -66,7 +71,15 @@ class CurrentForecastFragment : Fragment() {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
-        performQuery()
+        val vm = ViewModelProviders.of(parentFragment).get(LocationViewModel::class.java)
+                .getLocation(activity)
+                .observe(this, android.arch.lifecycle.Observer { location ->
+                    currentLocation = "${location!!.latitude}, ${location.longitude}"
+                    if (!isCreated) {
+                        performQuery(currentLocation)
+                        isCreated =true
+                    }
+                })
 
 
     }
@@ -77,7 +90,7 @@ class CurrentForecastFragment : Fragment() {
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout)
         swipeRefreshLayout.apply {
             this.setOnRefreshListener {
-                performQuery()
+                performQuery(currentLocation)
 
             }
         }
@@ -88,7 +101,7 @@ class CurrentForecastFragment : Fragment() {
         address = view.findViewById(R.id.text_geo_address)
         lastCall = view.findViewById(R.id.text_last_time_call)
 
-        if(savedList!=null){
+        if (savedList != null) {
             fillTextViews(savedList!!)
         }
         return view
@@ -148,8 +161,8 @@ class CurrentForecastFragment : Fragment() {
     }
 
 
-    fun performQuery() {
-        disposable = weatherForecastService.checkCurrentForecast(API_KEY, temp_latng, exclude, units)
+    fun performQuery(currentLocation: String) {
+        disposable = weatherForecastService.checkCurrentForecast(API_KEY, currentLocation, exclude, units)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result ->

@@ -1,16 +1,20 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.adapters.ForecastPagerAdapter
+import com.example.daza.soundmap.viewmodels.LocationViewModel
 
 
 /**
@@ -21,7 +25,13 @@ import com.example.daza.soundmap.data.adapters.ForecastPagerAdapter
  * Use the [ForecastFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+interface CustomLocationListener{
+    fun onLocationUpdate()
+}
+
 class ForecastFragment : Fragment() {
+    val TAG = ForecastFragment::class.java.simpleName
     private lateinit var viewPager: ViewPager
     private lateinit var tabLayout: TabLayout
     private lateinit var pagerAdapter: PagerAdapter
@@ -58,6 +68,11 @@ class ForecastFragment : Fragment() {
         if (mListener != null) {
             mListener!!.onFragmentInteraction(uri)
         }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        Log.d("FOR", "ON ATTACH")
     }
 
 //    override fun onAttach(context: Context) {
@@ -111,8 +126,5 @@ class ForecastFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
-
-        private val INSTANCE = ForecastFragment()
-        fun getInstance() = INSTANCE
     }
 }// Required empty public constructor

@@ -1,5 +1,6 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.arch.lifecycle.ViewModelProviders
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import com.example.daza.soundmap.data.adapters.HourForecastAdapter
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.services.WeatherForecastService
+import com.example.daza.soundmap.viewmodels.LocationViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -37,6 +39,8 @@ class DayForecastFragment : Fragment() {
     val exclude = "currently,minutely,daily"
     val units = "si"
     //temp
+    var isCreated = false
+    lateinit var currentLocation: String
     val temp_latng = "52.2207651, 21.0096579"
     val geocoder by lazy { Geocoder(this.context) }
     lateinit var disposable: Disposable
@@ -59,7 +63,15 @@ class DayForecastFragment : Fragment() {
             mParam2 = arguments.getString(ARG_PARAM2)
         }
         recyclerViewAdapter = HourForecastAdapter()
-        performQuery()
+        val vm = ViewModelProviders.of(parentFragment).get(LocationViewModel::class.java)
+                .getLocation(activity)
+                .observe(this, android.arch.lifecycle.Observer { location ->
+                    currentLocation = "${location!!.latitude}, ${location.longitude}"
+                    if (!isCreated) {
+                        performQuery(currentLocation)
+                        isCreated =true
+                    }
+                })
 
     }
 
@@ -70,7 +82,7 @@ class DayForecastFragment : Fragment() {
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout_hour)
         swipeRefreshLayout.apply {
             this.setOnRefreshListener {
-                performQuery()
+                performQuery(currentLocation)
             }
         }
         recyclerView = view.findViewById(R.id.recycler_view_hour_forecast)
@@ -94,8 +106,8 @@ class DayForecastFragment : Fragment() {
         mListener = null
     }
 
-    fun performQuery() {
-        disposable = weatherForecastService.checkHourForecast(API_KEY, temp_latng, exclude, units)
+    fun performQuery(currentLocation: String) {
+        disposable = weatherForecastService.checkHourForecast(API_KEY, currentLocation, exclude, units)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ result ->
