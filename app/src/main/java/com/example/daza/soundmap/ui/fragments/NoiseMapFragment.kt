@@ -56,7 +56,7 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
     val geocoder by lazy { Geocoder(activity) }
     val MAP_PIXEL_WIDTH by lazy { mapFragment.view!!.measuredWidth.toDouble() }
     val MAP_PIXEL_HEIGHT by lazy { mapFragment.view!!.measuredHeight.toDouble() }
-    val MAPS_API_KEY = resources.getString(R.string.google_maps_key)
+    val MAPS_API_KEY by lazy {resources.getString(R.string.google_maps_key)}
     val DIRECTION_MODE = "bicycling"
     //val DIRECTION_MODE = "walking"
     val ORIGIN = "52.150001400986284,21.03444099676267"
