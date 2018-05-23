@@ -13,11 +13,8 @@ import android.support.v7.app.ActionBar
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
-import com.example.daza.soundmap.ui.fragments.ForecastFragment
 import com.example.daza.soundmap.R
-import com.example.daza.soundmap.ui.fragments.AboutFragment
-import com.example.daza.soundmap.ui.fragments.CurrentForecastFragment
-import com.example.daza.soundmap.ui.fragments.NoiseMapFragment
+import com.example.daza.soundmap.ui.fragments.*
 import com.google.android.gms.maps.MapFragment
 
 class Main2Activity : AppCompatActivity() {
@@ -56,7 +53,7 @@ class Main2Activity : AppCompatActivity() {
                     R.id.nav_saved_trips -> NoiseMapFragment()
                     R.id.nav_forecast -> ForecastFragment()
                     R.id.nav_acc_info -> ForecastFragment()
-                    R.id.nav_settings -> ForecastFragment()
+                    R.id.nav_settings -> SettingsFragment()
                     R.id.nav_app_info -> AboutFragment()
                     else -> NoiseMapFragment()
                 }

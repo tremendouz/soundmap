@@ -1,6 +1,7 @@
 package com.example.daza.soundmap.ui.fragments
 
 import android.arch.lifecycle.ViewModelProviders
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -16,9 +17,12 @@ import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.services.WeatherForecastService
 import com.example.daza.soundmap.viewmodels.LocationViewModel
+import com.facebook.shimmer.ShimmerFrameLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.jetbrains.anko.find
+import java.lang.String.join
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -45,7 +49,7 @@ class CurrentForecastFragment : Fragment() {
     lateinit var disposable: Disposable
     var savedList: CurrentForecastModel? = null
     lateinit var currentLocation: String
-
+    lateinit var shimmerFrameLayout: ShimmerFrameLayout
     val weatherForecastService by lazy { WeatherForecastService.create() }
 
     private lateinit var windSpeed: TextView
@@ -77,7 +81,7 @@ class CurrentForecastFragment : Fragment() {
                     currentLocation = "${location!!.latitude}, ${location.longitude}"
                     if (!isCreated) {
                         performQuery(currentLocation)
-                        isCreated =true
+                        isCreated = true
                     }
                 })
 
@@ -94,6 +98,10 @@ class CurrentForecastFragment : Fragment() {
 
             }
         }
+
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_view_container)
+        shimmerFrameLayout.duration = 1000
+
 
         windSpeed = view.findViewById(R.id.text_wind_speed)
         windBurst = view.findViewById(R.id.text_wind_burst)
@@ -128,7 +136,8 @@ class CurrentForecastFragment : Fragment() {
     }
 
     fun getAddressFromGeo(latitude: Double, longitude: Double): String {
-        return geocoder.getFromLocation(latitude, longitude, 1)[0].getAddressLine(0)
+        return geocoder.getFromLocation(latitude, longitude, 1)[0]
+                .getAddressLine(0)
     }
 
     fun fillTextViews(data: CurrentForecastModel) {
@@ -141,6 +150,9 @@ class CurrentForecastFragment : Fragment() {
         val lastCallString = convertTimestampToDate(currently.time.toLong())
 
         windSpeed.text = windSpeedString
+        if (currently.windSpeed > 5.28) {
+            windSpeed.setTextColor(Color.RED)
+        }
         windBurst.text = windBurstString
         windDirection.text = windDirString
         address.text = addressString
@@ -162,6 +174,7 @@ class CurrentForecastFragment : Fragment() {
 
 
     fun performQuery(currentLocation: String) {
+        shimmerFrameLayout.startShimmerAnimation()
         disposable = weatherForecastService.checkCurrentForecast(API_KEY, currentLocation, exclude, units)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -170,6 +183,8 @@ class CurrentForecastFragment : Fragment() {
                     Log.d(TAG, "OnNext: ${result.currently} ${getAddressFromGeo(result.latitude, result.longitude)}")
                     fillTextViews(result)
                     savedList = result
+                    shimmerFrameLayout.stopShimmerAnimation()
+
                 },
                         { error -> Log.e(TAG, "OnError: {${error.message}}") },
                         { Log.d(TAG, "OnComplete: API call completed") })

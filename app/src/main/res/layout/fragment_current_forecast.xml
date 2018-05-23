@@ -11,6 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
         <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
@@ -179,6 +183,7 @@
             </android.support.v7.widget.CardView>
 
         </android.support.constraint.ConstraintLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

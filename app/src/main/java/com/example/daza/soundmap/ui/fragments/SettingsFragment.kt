@@ -3,12 +3,15 @@ package com.example.daza.soundmap.ui.fragments
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.app.Fragment
+import android.support.v4.app.Fragment
+import android.support.v7.preference.PreferenceFragmentCompat
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import com.example.daza.soundmap.R
+import kotlinx.android.synthetic.main.activity_main2.*
 
 /**
  * A simple [Fragment] subclass.
@@ -18,7 +21,7 @@ import com.example.daza.soundmap.R
  * Use the [SettingsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : Fragment() {
+class SettingsFragment : PreferenceFragmentCompat() {
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -34,10 +37,8 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        addPreferencesFromResource(R.xml.app_settings)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -47,14 +48,14 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
+//    override fun onAttach(context: Context) {
+//        super.onAttach(context)
+//        if (context is OnFragmentInteractionListener) {
+//            mListener = context
+//        } else {
+//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+//        }
+//    }
 
     override fun onDetach() {
         super.onDetach()

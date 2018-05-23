@@ -26,8 +26,9 @@
     <string name="school">Warsaw University of Technology</string>
     <string name="email_author">D.Zawrotny@stud.elka.pw.edu.pl </string>
     <string name="about">About</string>
-    <string name="app_info">Noise pollution is a growing problem. In Europe, 65% of the population is exposed to unhealthy levels of transportation noise.
-        30% of Americans complained of noise and 40% of those would like to change their place of residence because of this.
+    <string name="app_info">Noise pollution is a growing problem.
+        In Europe, 65% of the population is exposed to unhealthy levels of transportation noise.
+        30% of Americans complained of noise and 40% of those would like to change their place of residence because of this.\n
         \nTo address this issue SilentPaths application was created.
         Smartphones and their microphones are used as sound level meters which will be then used to monitor the noise levels around the urban areas.
         </string>

@@ -1,5 +1,6 @@
 package com.example.daza.soundmap.ui.fragments
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.daza.soundmap.BuildConfig
 import com.example.daza.soundmap.R
+import kotlinx.android.synthetic.main.activity_main2.*
 
 
 /**
