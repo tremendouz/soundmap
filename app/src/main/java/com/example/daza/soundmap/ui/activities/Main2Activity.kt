@@ -16,11 +16,13 @@ import android.view.MenuItem
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.*
 import com.google.android.gms.maps.MapFragment
+import com.google.firebase.auth.FirebaseAuth
 
 class Main2Activity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private val TAG = Main2Activity::class.java.simpleName
+    private val firebaseAuthInstance by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +45,7 @@ class Main2Activity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
                 clearBackStack()
+                firebaseAuthInstance.signOut()
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 true

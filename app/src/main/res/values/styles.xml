@@ -22,4 +22,12 @@
     </style>
 
 
+    <style name="MyButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/primaryColor</item>
+        <item name="colorButtonNormal">@color/primaryColor</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+
+    </style>
+
+
 </resources>

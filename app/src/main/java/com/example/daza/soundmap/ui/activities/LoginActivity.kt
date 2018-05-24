@@ -51,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
             loginUser(textEmail.text.toString(), textPassword.text.toString())
         }
 
+
         val emailObservable = RxTextView.textChanges(textEmail)
         emailObservable.map { text -> isValidEmail(text.toString()) }
                 .skip(1)
@@ -74,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
 
         val firebaseAuth = FirebaseAuth.getInstance()
         if (firebaseAuth.currentUser != null) {
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            val intent = Intent(this@LoginActivity, Main2Activity::class.java)
             startActivity(intent)
         }
 
@@ -96,7 +97,7 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener { task: Task<AuthResult> ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "LoginUserWithEmail:success")
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        val intent = Intent(this@LoginActivity, Main2Activity::class.java)
                         startActivity(intent)
                     } else {
                         Log.w(TAG, "LoginUserWithEmail:failure")
