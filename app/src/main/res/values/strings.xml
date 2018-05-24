@@ -21,6 +21,13 @@
     <string name="nav_bar_item_7">About</string>
     <string name="nav_bar_item_8">Logout</string>
 
+    <string name="alert_dialog_rp_tile">Password reset</string>
+    <string name="alert_dialog_rp_message">Enter the email address you used to create the account to reset your password.</string>
+
+    <string name="password_restore_success"> Check your email inbox, and click the link in the email you received to reset your password.</string>
+    <string name="password_restore_failed"> Incorrect Email. The email you entered does not belong to any account. </string>
+
+
     <string name="app_author">Dawid Zawrotny</string>
     <string name="author">Author</string>
     <string name="school">Warsaw University of Technology</string>

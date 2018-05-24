@@ -5,6 +5,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.util.Patterns
 import android.widget.Button
@@ -19,6 +20,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import android.content.DialogInterface
+import android.support.design.widget.TextInputEditText
+import android.view.LayoutInflater
+import kotlinx.android.synthetic.main.alert_dialog_password_restore.view.*
 
 
 class LoginActivity : AppCompatActivity() {
@@ -87,7 +92,30 @@ class LoginActivity : AppCompatActivity() {
 
         restorePasswordButton = findViewById(R.id.button_forgot_password)
         restorePasswordButton.setOnClickListener {
-            restorePassword()
+            val view = LayoutInflater.from(this).inflate(R.layout.alert_dialog_password_restore, null)
+            val positiveButton = view.findViewById<Button>(R.id.btn_alert_positive)
+            val negativeButton = view.findViewById<Button>(R.id.btn_alert_negative)
+            val alert_text_input_email = view.findViewById<TextInputLayout>(R.id.alert_input_layout_email)
+            val alert_text_email = view.findViewById<TextInputEditText>(R.id.alert_text_email)
+            val alertEmailObservable = RxTextView.textChanges(alert_text_email)
+
+            val restorePasswordAlert = AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_dialog_rp_tile)
+                    .setMessage(R.string.alert_dialog_rp_message)
+                    .setView(view)
+                    .setCancelable(false)
+                    .show()
+
+            alertEmailObservable.map { text -> isValidEmail(text.toString()) }
+                    .debounce(debounceTime, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                    .subscribe { isValid -> validateEmailAlert(isValid, alert_text_input_email, positiveButton) }
+
+            positiveButton.setOnClickListener { restorePassword(alert_text_email.text.toString())
+            restorePasswordAlert.cancel()}
+            negativeButton.setOnClickListener {
+                restorePasswordAlert.cancel()
+            }
+
         }
     }
 
@@ -132,6 +160,21 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    fun validateEmailAlert(valid: Boolean, textInputLayout: TextInputLayout, button: Button){
+        //TODO this works fine apply this on email and password from login form
+        if(textInputLayout.alert_text_email.text.isEmpty() && !valid){
+            button.isEnabled = false
+            textInputLayout.isErrorEnabled = false
+
+        }
+        else{
+            textInputLayout.error = resources.getString(R.string.error_input_email)
+            textInputLayout.isErrorEnabled = !valid
+            button.isEnabled = valid
+        }
+
+    }
+
     fun isValidPassword(password: String): Boolean {
         return password.isNotEmpty() && password.length > 6
     }
@@ -147,15 +190,18 @@ class LoginActivity : AppCompatActivity() {
         loginButton.isEnabled = boolean
     }
 
-    fun restorePassword(email: String = "dawidos00952@gmail.com") {
+    fun restorePassword(email: String) {
         firebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener { task: Task<Void> ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "SendRestorePasswordEmail:success")
-                        toast("Email has been sent.")
+                        Toast.makeText(this,
+                                R.string.password_restore_success, Toast.LENGTH_LONG).show()
 
                     } else {
                         Log.w(TAG, "SendRestorePasswordEmail:failure")
+                        Toast.makeText(this,
+                                R.string.password_restore_failed, Toast.LENGTH_LONG).show()
                     }
                 }
     }
