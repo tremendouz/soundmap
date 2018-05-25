@@ -46,7 +46,7 @@ class Main2Activity : AppCompatActivity() {
             if (it.itemId == R.id.nav_logout) {
                 clearBackStack()
                 firebaseAuthInstance.signOut()
-                val intent = Intent(this, LoginActivity::class.java)
+                val intent = Intent(this, AuthActivity::class.java)
                 startActivity(intent)
                 true
             } else {
