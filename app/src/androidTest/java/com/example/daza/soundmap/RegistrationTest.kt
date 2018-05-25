@@ -18,6 +18,9 @@ import android.support.test.runner.AndroidJUnit4
 import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import android.support.test.runner.lifecycle.Stage
 import android.view.View
+import com.example.daza.soundmap.ui.activities.AuthActivity
+import com.example.daza.soundmap.ui.activities.MainActivity
+import kotlinx.android.synthetic.main.fragment_login.view.*
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
@@ -46,12 +49,13 @@ class RegistrationTest {
 
     @Rule
     @JvmField
-    val activityRule = IntentsTestRule<RegistrationActivity>(RegistrationActivity::class.java)
+    val activityRule = IntentsTestRule<AuthActivity>(AuthActivity::class.java)
 
 
 
     @Before
     fun clearAll() {
+        onView(withId(R.id.button_registration)).perform(click())
         onView(withId(R.id.text_email)).perform(clearText())
         onView(withId(R.id.text_password)).perform(clearText())
         onView(withId(R.id.text_confirm_password)).perform(clearText())
@@ -91,7 +95,7 @@ class RegistrationTest {
                 .perform(typeText(validPasswordString))
                 .perform(closeSoftKeyboard())
 
-        onView((withId(R.id.button_register))).check(matches(isEnabled()))
+        onView((withId(R.id.button_signup))).check(matches(isEnabled()))
     }
 
     @Test
@@ -108,7 +112,7 @@ class RegistrationTest {
                 .perform(typeText(validPasswordString))
                 .perform(closeSoftKeyboard())
 
-        onView((withId(R.id.button_register))).check(matches(not(isEnabled())))
+        onView((withId(R.id.button_signup))).check(matches(not(isEnabled())))
     }
 
     @Test
@@ -129,7 +133,7 @@ class RegistrationTest {
                 .perform(closeSoftKeyboard())
 
 
-        onView(withId(R.id.button_register))
+        onView(withId(R.id.button_signup))
                 .perform(click())
 
         idlingRegistry.register(activityResource)

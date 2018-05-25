@@ -1,12 +1,10 @@
 package com.example.daza.soundmap.ui.activities
 
-import android.app.Fragment
 import android.app.FragmentManager
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
@@ -15,13 +13,12 @@ import android.util.Log
 import android.view.MenuItem
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.*
-import com.google.android.gms.maps.MapFragment
 import com.google.firebase.auth.FirebaseAuth
 
-class Main2Activity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
-    private val TAG = Main2Activity::class.java.simpleName
+    private val TAG = MainActivity::class.java.simpleName
     private val firebaseAuthInstance by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -3,7 +3,6 @@ package com.example.daza.soundmap.ui.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -17,10 +16,7 @@ import com.example.daza.soundmap.ui.fragments.SignupFragment
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.yesButton
@@ -33,6 +29,8 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
     val fireDB by lazy { FirebaseDatabase.getInstance() }
     val fireRef by lazy { fireDB.getReference(USER_TABLE) }
 
+    // TODO - tests without this var
+    var isTested: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +41,8 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
     }
 
     fun setupContent(){
-        if(firebaseAuthInstance.currentUser!=null){
-            val intent = Intent(this, Main2Activity::class.java)
+        if(firebaseAuthInstance.currentUser!=null && !isTested){
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
         else {
@@ -76,7 +74,7 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
                         Log.d(TAG, "createUserWithEmail:success")
                         val user = firebaseAuthInstance.currentUser
                         fireRef.child(user?.uid).setValue("Dawid")
-                        val intent = Intent(this, Main2Activity::class.java)
+                        val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     } else {
                         Log.e(TAG, "createUserWithEmail:failure ${task.exception}")
@@ -91,7 +89,7 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
                 .addOnCompleteListener { task: Task<AuthResult> ->
                     if (task.isSuccessful) {
                         Log.d(TAG, "LoginUserWithEmail:success")
-                        val intent = Intent(this, Main2Activity::class.java)
+                        val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                     } else {
                         Log.e(TAG, "LoginUserWithEmail:failure")

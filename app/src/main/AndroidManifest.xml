@@ -39,14 +39,10 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity android:name=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.RegistrationActivity" />
         <activity android:name=".ui.activities.LocationActivity" />
         <activity
-            android:name=".ui.activities.Main2Activity"
+            android:name=".ui.activities.MainActivity"
             android:theme="@style/AppThemeNoActionBar" />
-        <activity android:name=".ui.activities.LoginActivity"></activity>
     </application>
 
 </manifest>
