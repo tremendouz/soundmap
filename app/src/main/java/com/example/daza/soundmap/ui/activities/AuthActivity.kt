@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
 import android.util.Log
@@ -32,6 +34,8 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
     // TODO - tests without this var
     var isTested: Boolean = true
 
+    var isFirstFragment = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
@@ -40,16 +44,25 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
 
     }
 
-    fun setupContent(){
-        if(firebaseAuthInstance.currentUser!=null && !isTested){
+    fun setupContent() {
+        if (firebaseAuthInstance.currentUser != null && !isTested) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-        }
-        else {
+        } else {
             supportFragmentManager.beginTransaction()
                     .setTransition(TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.auth_activity_frame, LoginFragment())
+                    .addToBackStack(null)
                     .commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1) {
+            supportFragmentManager.popBackStackImmediate("login", POP_BACK_STACK_INCLUSIVE)
+            supportFragmentManager.executePendingTransactions()
+        } else {
+            finish()
         }
     }
 
@@ -58,13 +71,25 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
             supportFragmentManager.beginTransaction()
                     .setTransition(TRANSIT_FRAGMENT_FADE)
                     .replace(R.id.auth_activity_frame, LoginFragment())
+                    .addToBackStack(null)
                     .commit()
-        } else {
-            supportFragmentManager.beginTransaction()
-                    .setTransition(TRANSIT_FRAGMENT_FADE)
-                    .replace(R.id.auth_activity_frame, SignupFragment())
-                    .commit()
+        } else if (fragment is LoginFragment) {
+            if (isFirstFragment) {
+                supportFragmentManager.beginTransaction()
+                        .setTransition(TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.auth_activity_frame, SignupFragment())
+                        .addToBackStack("login")
+                        .commit()
+                isFirstFragment = false
+            } else {
+                supportFragmentManager.beginTransaction()
+                        .setTransition(TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.auth_activity_frame, SignupFragment())
+                        .addToBackStack(null)
+                        .commit()
+            }
         }
+
     }
 
     override fun registerUser(email: String, password: String) {
@@ -120,9 +145,9 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
         } else if (requestCode == REQUEST_PERMISSIONS_CODE
                 && grantResults[0] == PackageManager.PERMISSION_DENIED
                 || grantResults[1] == PackageManager.PERMISSION_DENIED) {
-            alert("In order to use this app you have to grant both ACCESS FINE LOCATION and RECORD AUDIO permissions"){
-                yesButton {checkPermissions()}
-                noButton {finish()}
+            alert("In order to use this app you have to grant both ACCESS FINE LOCATION and RECORD AUDIO permissions") {
+                yesButton { checkPermissions() }
+                noButton { finish() }
                 title = "Permission denied"
                 isCancelable = false
             }.show()
