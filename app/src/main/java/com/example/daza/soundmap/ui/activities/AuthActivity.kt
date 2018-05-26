@@ -32,7 +32,7 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
     val fireRef by lazy { fireDB.getReference(USER_TABLE) }
 
     // TODO - tests without this var
-    var isTested: Boolean = true
+    //var isTested: Boolean = true
 
     var isFirstFragment = true
 
@@ -45,9 +45,10 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
     }
 
     fun setupContent() {
-        if (firebaseAuthInstance.currentUser != null && !isTested) {
+        if (firebaseAuthInstance.currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         } else {
             supportFragmentManager.beginTransaction()
                     .setTransition(TRANSIT_FRAGMENT_OPEN)
@@ -101,6 +102,7 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
                         fireRef.child(user?.uid).setValue("Dawid")
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         Log.e(TAG, "createUserWithEmail:failure ${task.exception}")
                         Toast.makeText(this,
@@ -116,6 +118,7 @@ class AuthActivity : AppCompatActivity(), SignupFragment.OnChangeFragmentListene
                         Log.d(TAG, "LoginUserWithEmail:success")
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         Log.e(TAG, "LoginUserWithEmail:failure")
                         Toast.makeText(this,

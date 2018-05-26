@@ -12,6 +12,8 @@ import android.support.v7.app.ActionBar
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.*
 import com.google.firebase.auth.FirebaseAuth
@@ -67,6 +69,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val navHeaderView = navigationView.getHeaderView(0)
+        val txtCurrentUserEmail = navHeaderView.findViewById<TextView>(R.id.txt_current_user_email)
+        txtCurrentUserEmail.text = firebaseAuthInstance.currentUser?.email
+
         cacheFragment(NoiseMapFragment())
         navigationView.menu.getItem(0).isChecked = true
 
@@ -83,6 +89,7 @@ class MainActivity : AppCompatActivity() {
                 firebaseAuthInstance.signOut()
                 val intent = Intent(this@MainActivity, AuthActivity::class.java)
                 startActivity(intent)
+                finish()
             }
             negativeButton("NO") { it.cancel() }
             title = "Logging out"
@@ -93,6 +100,7 @@ class MainActivity : AppCompatActivity() {
     fun buildExitAppAlert() {
         alert("Really quit?") {
             positiveButton("Yes") {
+                this@MainActivity.finish()
                 this@MainActivity.finishAffinity()
                 it.cancel()
             }
