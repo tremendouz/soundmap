@@ -1,5 +1,6 @@
 package com.example.daza.soundmap.ui.activities
 
+import android.app.AlertDialog
 import android.app.FragmentManager
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -14,6 +15,10 @@ import android.view.MenuItem
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.*
 import com.google.firebase.auth.FirebaseAuth
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.cancelButton
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.yesButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,10 +46,7 @@ class MainActivity : AppCompatActivity() {
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
-                clearBackStack()
-                firebaseAuthInstance.signOut()
-                val intent = Intent(this, AuthActivity::class.java)
-                startActivity(intent)
+                buildLogOutAlert()
                 true
             } else {
                 var fragment = when (it.itemId) {
@@ -68,6 +70,36 @@ class MainActivity : AppCompatActivity() {
         cacheFragment(NoiseMapFragment())
         navigationView.menu.getItem(0).isChecked = true
 
+    }
+
+    override fun onBackPressed() {
+        buildExitAppAlert()
+    }
+
+    fun buildLogOutAlert() {
+        alert("Log out?") {
+            positiveButton("Yes") {
+                clearBackStack()
+                firebaseAuthInstance.signOut()
+                val intent = Intent(this@MainActivity, AuthActivity::class.java)
+                startActivity(intent)
+            }
+            negativeButton("NO") { it.cancel() }
+            title = "Logging out"
+            isCancelable = false
+        }.show()
+    }
+
+    fun buildExitAppAlert() {
+        alert("Really quit?") {
+            positiveButton("Yes") {
+                this@MainActivity.finishAffinity()
+                it.cancel()
+            }
+            negativeButton("NO") { it.cancel() }
+            title = "Quit"
+            isCancelable = false
+        }.show()
     }
 
     fun cacheFragment(fragment: android.support.v4.app.Fragment) {
