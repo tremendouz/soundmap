@@ -5,10 +5,12 @@ import android.arch.lifecycle.LiveDataReactiveStreams
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.SharedPreferences
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -52,18 +54,20 @@ import io.reactivex.schedulers.Schedulers
  * Use the [NoiseMapFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NoiseMapFragment : Fragment(), OnMapReadyCallback {
+class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener {
     val TAG = NoiseMapFragment::class.java.simpleName
     val geocoder by lazy { Geocoder(activity) }
     val MAP_PIXEL_WIDTH by lazy { mapFragment.view!!.measuredWidth.toDouble() }
     val MAP_PIXEL_HEIGHT by lazy { mapFragment.view!!.measuredHeight.toDouble() }
-    val MAPS_API_KEY by lazy {resources.getString(R.string.google_maps_key)}
+    val MAPS_API_KEY by lazy { resources.getString(R.string.google_maps_key) }
     val DIRECTION_MODE = "bicycling"
     //val DIRECTION_MODE = "walking"
     val ORIGIN = "52.150001400986284,21.03444099676267"
     val DESTINATION = "52.14923774618937,21.042594912167942"
     val WAYPOINTS = "52.151923646458364,21.038818361874974|52.151791988457184,21.037530901547825"
     val googleDirectionsService by lazy { GoogleDirectionsService.create() }
+
+    val MAPS_THEME_KEY = "map_theme"
 
 
     lateinit var listOfGeoPoints: ArrayList<Location>
@@ -86,6 +90,10 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
         }
 
         listOfGeoPoints = arrayListOf()
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
 
         val firebaseViewModel = ViewModelProviders.of(this)
                 .get(FirebaseQueryViewModel::class.java)
@@ -124,6 +132,20 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
         super.onActivityCreated(savedInstanceState)
     }
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if (key == MAPS_THEME_KEY) {
+            val themePref = sharedPreferences?.getString(key, "")
+            val mapStyle = when (themePref) {
+                "Default" -> R.raw.default_map_style
+                "Retro" -> R.raw.retro_map_style
+                "Night" -> R.raw.night_map_style
+                else -> R.raw.default_map_style
+            }
+            mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(activity, mapStyle))
+            Log.d(TAG, "Maps theme changed to: $themePref")
+        }
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         if (mListener != null) {
@@ -137,10 +159,17 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback {
         mListener = null
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+    }
+
     @SuppressWarnings("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
+        Log.d(TAG, "MAP READY")
         mMap = googleMap
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(activity, R.raw.retro_map_style))
         mMap.isMyLocationEnabled = true
         mMap.uiSettings.isZoomControlsEnabled = true
         mMap.uiSettings.isCompassEnabled = true

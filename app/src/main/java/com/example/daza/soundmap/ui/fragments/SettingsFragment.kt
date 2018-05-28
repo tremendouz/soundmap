@@ -1,6 +1,7 @@
 package com.example.daza.soundmap.ui.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 
 import com.example.daza.soundmap.R
 import kotlinx.android.synthetic.main.activity_main2.*
+import android.support.v7.preference.PreferenceScreen
 
 /**
  * A simple [Fragment] subclass.
@@ -21,7 +23,9 @@ import kotlinx.android.synthetic.main.activity_main2.*
  * Use the [SettingsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+
+    val MAPS_THEME_KEY = "map_theme"
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -35,10 +39,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
+        //addPreferencesFromResource(R.xml.app_settings)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.app_settings)
+        findPreference(MAPS_THEME_KEY).summary = preferenceScreen.sharedPreferences.getString(MAPS_THEME_KEY, "")
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key == MAPS_THEME_KEY){
+        val pref = findPreference(key)
+        pref.summary = sharedPreferences?.getString(key, "")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -56,6 +79,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 //            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
 //        }
 //    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    }
 
     override fun onDetach() {
         super.onDetach()

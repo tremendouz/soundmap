@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Label ordering must match values -->
+    <array name="pref_map_style_option_labels">
+        <item>Default</item>
+        <item>Retro</item>
+        <item>Night</item>
+    </array>
+
+    <array name="pref_map_style_option_values">
+        <item>Default</item>
+        <item>Retro</item>
+        <item>Night</item>
+    </array>
+
+</resources>

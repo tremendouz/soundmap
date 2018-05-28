@@ -31,6 +31,11 @@
 
     <string name="invalid_form">Please fill the form correctly</string>
 
+    <string name="maps_default_theme">Default</string>
+    <string name="dialog_title_maps_theme">Choose map style</string>
+    <string name="settings_title_map">Google Maps style</string>
+
+
     <string name="app_author">Dawid Zawrotny</string>
     <string name="author">Author</string>
     <string name="school">Warsaw University of Technology</string>
