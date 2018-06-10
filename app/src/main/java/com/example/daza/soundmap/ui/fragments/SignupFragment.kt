@@ -1,27 +1,21 @@
 package com.example.daza.soundmap.ui.fragments
 
 import android.content.Context
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-
 import com.example.daza.soundmap.R
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.fragment_signup.view.*
 import io.reactivex.functions.Function3
-import kotlinx.android.synthetic.main.alert_dialog_password_restore.view.*
-import org.jetbrains.anko.design.textInputEditText
 import java.util.concurrent.TimeUnit
 
 /**

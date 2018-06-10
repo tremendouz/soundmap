@@ -1,25 +1,7 @@
 <android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.v7.preference.PreferenceCategory
-        android:title="Category 1">
-
-        <android.support.v7.preference.SwitchPreferenceCompat
-            android:key="key1"
-            android:title="Switch Preference"
-            android:summary="Switch Summary"
-            android:defaultValue="true" />
-
-        <android.support.v7.preference.EditTextPreference
-            android:key="key2"
-            android:title="EditText Preference"
-            android:summary="EditText Summary"
-            android:dialogMessage="Dialog Message"
-            android:defaultValue="Default value" />
-        <android.support.v7.preference.CheckBoxPreference
-            android:key="key3"
-            android:title="CheckBox Preference"
-            android:summary="CheckBox Summary"
-            android:defaultValue="true"/>
+        android:title="Google Maps">
 
         <android.support.v7.preference.ListPreference
             android:key="map_theme"
@@ -31,6 +13,44 @@
             android:defaultValue="@string/maps_default_theme"/>
 
     </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Local">
+
+        <android.support.v7.preference.ListPreference
+            android:key="app_language"
+            android:title="@string/settings_title_language"
+            android:summary="English"
+            android:dialogTitle="@string/dialog_title_language"
+            android:entries="@array/pref_map_style_option_labels"
+            android:entryValues="@array/pref_map_style_option_values"
+            android:defaultValue="@string/language_default"/>
+
+        <android.support.v7.preference.ListPreference
+            android:key="measure_units"
+            android:title="@string/settings_title_unit"
+            android:summary="SI"
+            android:dialogTitle="@string/dialog_title_units_theme"
+            android:entries="@array/pref_map_style_option_labels"
+            android:entryValues="@array/pref_map_style_option_values"
+            android:defaultValue="@string/units_default"/>
+
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Local">
+
+        <android.support.v7.preference.ListPreference
+            android:key="app_language"
+            android:title="@string/settings_title_language"
+            android:summary="English"
+            android:dialogTitle="@string/dialog_title_language"
+            android:entries="@array/pref_map_style_option_labels"
+            android:entryValues="@array/pref_map_style_option_values"
+            android:defaultValue="@string/language_default"/>
+
+    </android.support.v7.preference.PreferenceCategory>
+
 
 
 </android.support.v7.preference.PreferenceScreen>

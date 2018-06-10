@@ -1,6 +1,5 @@
 package com.example.daza.soundmap.ui.fragments
 
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.data.adapters.ForecastPagerAdapter
-import com.example.daza.soundmap.viewmodels.LocationViewModel
 
 
 /**

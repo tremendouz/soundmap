@@ -12,8 +12,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.daza.soundmap.data.adapters.DayForecastAdapter
 import com.example.daza.soundmap.R
+import com.example.daza.soundmap.data.adapters.DayForecastAdapter
 import com.example.daza.soundmap.data.services.WeatherForecastService
 import com.example.daza.soundmap.viewmodels.LocationViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers

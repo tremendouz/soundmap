@@ -13,14 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-
 import com.example.daza.soundmap.R
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import org.jetbrains.anko.find
 import io.reactivex.functions.BiFunction
-
 import java.util.concurrent.TimeUnit
 
 /**
@@ -103,6 +100,7 @@ class LoginFragment : Fragment() {
             button?.isEnabled = valid
         }
     }
+
 
     fun showForgotPasswordDialog() {
         val view = LayoutInflater.from(activity).inflate(R.layout.alert_dialog_password_restore, null)

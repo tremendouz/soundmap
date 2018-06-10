@@ -1,26 +1,23 @@
 package com.example.daza.soundmap.ui.activities
 
-import android.app.AlertDialog
 import android.app.FragmentManager
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.TextView
 import com.example.daza.soundmap.R
 import com.example.daza.soundmap.ui.fragments.*
 import com.google.firebase.auth.FirebaseAuth
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.cancelButton
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.yesButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,9 +51,9 @@ class MainActivity : AppCompatActivity() {
                 var fragment = when (it.itemId) {
                     R.id.nav_sound_map -> NoiseMapFragment()
                     R.id.nav_my_trips -> NoiseMapFragment()
-                    R.id.nav_saved_trips -> NoiseMapFragment()
+                    R.id.nav_saved_trips -> RidesFragment()
                     R.id.nav_forecast -> ForecastFragment()
-                    R.id.nav_acc_info -> ForecastFragment()
+                    R.id.nav_acc_info -> UserInfoFragment()
                     R.id.nav_settings -> SettingsFragment()
                     R.id.nav_app_info -> AboutFragment()
                     else -> NoiseMapFragment()
@@ -72,10 +69,16 @@ class MainActivity : AppCompatActivity() {
         val navHeaderView = navigationView.getHeaderView(0)
         val txtCurrentUserEmail = navHeaderView.findViewById<TextView>(R.id.txt_current_user_email)
         txtCurrentUserEmail.text = firebaseAuthInstance.currentUser?.email
+        val userImage = navHeaderView.findViewById<ImageView>(R.id.profile_image)
+        userImage.setOnClickListener {  }
 
         cacheFragment(NoiseMapFragment())
         navigationView.menu.getItem(0).isChecked = true
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onBackPressed() {

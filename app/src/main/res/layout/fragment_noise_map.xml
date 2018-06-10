@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.daza.soundmap.ui.fragments.NoiseMapFragment">
 
 
@@ -11,5 +12,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     />
+    
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|bottom">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:tint="@android:color/white"
+            android:layout_alignParentBottom="true"
+            app:useCompatPadding="true"
+            android:src="@android:drawable/ic_input_add"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_loc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fab_add"
+            android:layout_gravity="bottom|end"
+            android:backgroundTint="@android:color/white"
+            app:borderWidth="0dp"
+            app:useCompatPadding="true"
+            android:src="@drawable/crosshairs_gps"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <!--Circle is now 270 degrees. Max progress has to be 75% of max value not 100%-->
+        <ProgressBar
+            android:id="@+id/progressWheel"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="175dp"
+            android:layout_height="175sp"
+            android:indeterminate="false"
+            android:max="187"
+            android:progress="140"
+            android:progressDrawable="@drawable/circ_progress"
+            android:secondaryProgress="130" />
+
+        <TextView
+            android:id="@+id/myTextProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:background="@android:color/transparent"
+            android:text="@string/progress_bar_noise"
+            android:textSize="30sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_below="@+id/myTextProgress"
+            android:text="@string/progress_bar_bottom"
+            android:paddingTop="100dp"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
 
 </FrameLayout>

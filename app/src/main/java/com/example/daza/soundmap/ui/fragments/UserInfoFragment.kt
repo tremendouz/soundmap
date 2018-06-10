@@ -1,23 +1,24 @@
 package com.example.daza.soundmap.ui.fragments
 
-import android.content.SharedPreferences
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.preference.PreferenceFragmentCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+
 import com.example.daza.soundmap.R
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [SettingsFragment.OnFragmentInteractionListener] interface
+ * [UserInfoFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [SettingsFragment.newInstance] factory method to
+ * Use the [UserInfoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
-
-    val MAPS_THEME_KEY = "map_theme"
+class UserInfoFragment : Fragment() {
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -31,29 +32,12 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
-        //addPreferencesFromResource(R.xml.app_settings)
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.app_settings)
-        findPreference(MAPS_THEME_KEY).summary = preferenceScreen.sharedPreferences.getString(MAPS_THEME_KEY, "")
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if(key == MAPS_THEME_KEY){
-        val pref = findPreference(key)
-        pref.summary = sharedPreferences?.getString(key, "")
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_user_info, container, false)
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -71,11 +55,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
 //            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
 //        }
 //    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
 
     override fun onDetach() {
         super.onDetach()
@@ -108,11 +87,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
+         * @return A new instance of fragment UserInfoFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): SettingsFragment {
-            val fragment = SettingsFragment()
+        fun newInstance(param1: String, param2: String): UserInfoFragment {
+            val fragment = UserInfoFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)

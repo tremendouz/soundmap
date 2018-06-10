@@ -3,7 +3,6 @@ package com.example.daza.soundmap.ui.fragments
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.location.Geocoder
-import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,16 +12,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.R
+import com.example.daza.soundmap.data.models.CurrentForecastModel
 import com.example.daza.soundmap.data.services.WeatherForecastService
 import com.example.daza.soundmap.viewmodels.LocationViewModel
 import com.facebook.shimmer.ShimmerFrameLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.jetbrains.anko.find
-import java.lang.String.join
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

@@ -1,31 +1,34 @@
 package com.example.daza.soundmap.ui.activities
 
-import android.arch.lifecycle.*
-import android.location.Location
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import com.firebase.geofire.GeoLocation
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.database.DataSnapshot
+import android.arch.lifecycle.LiveDataReactiveStreams
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
 import android.location.Geocoder
+import android.location.Location
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
+import com.example.daza.soundmap.R
+import com.example.daza.soundmap.utils.AudioHelper
 import com.example.daza.soundmap.viewmodels.FirebaseQueryViewModel
 import com.example.daza.soundmap.viewmodels.LocationViewModel
 import com.example.daza.soundmap.viewmodels.MeasurementViewModel
-import com.example.daza.soundmap.R
-import com.example.daza.soundmap.utils.AudioHelper
-import com.google.android.gms.maps.*
+import com.firebase.geofire.GeoLocation
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.firebase.database.DataSnapshot
 import io.reactivex.Flowable
 import io.reactivex.functions.BiFunction
-
 import org.reactivestreams.Publisher
-import java.lang.ref.WeakReference
 
 
 class LocationActivity : AppCompatActivity(), OnMapReadyCallback {

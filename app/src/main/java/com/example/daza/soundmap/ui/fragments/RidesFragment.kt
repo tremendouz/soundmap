@@ -1,23 +1,36 @@
 package com.example.daza.soundmap.ui.fragments
 
-import android.content.SharedPreferences
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.preference.PreferenceFragmentCompat
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+
 import com.example.daza.soundmap.R
+import com.example.daza.soundmap.data.adapters.DayForecastAdapter
+import com.example.daza.soundmap.data.adapters.RidesAdapter
+import com.example.daza.soundmap.viewmodels.RidesViewModel
 
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [SettingsFragment.OnFragmentInteractionListener] interface
+ * [RidesFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [SettingsFragment.newInstance] factory method to
+ * Use the [RidesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
-
-    val MAPS_THEME_KEY = "map_theme"
+class RidesFragment : Fragment() {
+    val TAG = RidesFragment::class.java.simpleName
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerViewAdapter: RidesAdapter
 
     // TODO: Rename and change types of parameters
     private var mParam1: String? = null
@@ -31,29 +44,27 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             mParam1 = arguments.getString(ARG_PARAM1)
             mParam2 = arguments.getString(ARG_PARAM2)
         }
-        //addPreferencesFromResource(R.xml.app_settings)
+
+        recyclerViewAdapter = RidesAdapter()
+
+        ViewModelProviders.of(this)
+                .get(RidesViewModel::class.java)
+                .getRidesData()
+                .observe(this, Observer { x -> Log.d(TAG, "$x")
+                    recyclerViewAdapter.addItem(x!!)}
+                )
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.app_settings)
-        findPreference(MAPS_THEME_KEY).summary = preferenceScreen.sharedPreferences.getString(MAPS_THEME_KEY, "")
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_rides, container, false)
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        if(key == MAPS_THEME_KEY){
-        val pref = findPreference(key)
-        pref.summary = sharedPreferences?.getString(key, "")
-        }
-    }
+        recyclerView = view.findViewById(R.id.recycler_view_rides)
+        recyclerView.adapter = recyclerViewAdapter
+        recyclerView.layoutManager = LinearLayoutManager(activity)
 
-    override fun onResume() {
-        super.onResume()
-        preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        return view
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -71,11 +82,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
 //            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
 //        }
 //    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
 
     override fun onDetach() {
         super.onDetach()
@@ -108,11 +114,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
+         * @return A new instance of fragment RidesFragment.
          */
         // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): SettingsFragment {
-            val fragment = SettingsFragment()
+        fun newInstance(param1: String, param2: String): RidesFragment {
+            val fragment = RidesFragment()
             val args = Bundle()
             args.putString(ARG_PARAM1, param1)
             args.putString(ARG_PARAM2, param2)

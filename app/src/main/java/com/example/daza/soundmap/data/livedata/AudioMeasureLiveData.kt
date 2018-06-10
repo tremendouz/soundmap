@@ -1,13 +1,9 @@
 package com.example.daza.soundmap.data.livedata
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import com.example.daza.soundmap.utils.AudioHelper
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.scheduleAtFixedRate
 
 /**
