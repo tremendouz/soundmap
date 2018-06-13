@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveDataReactiveStreams
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.SharedPreferences
+import android.graphics.*
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -18,6 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.example.daza.soundmap.R
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -73,6 +76,16 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
     var isFirstOpened = true
     var isRideActive = false
 
+    //lateinit var testImage: ImageView
+    //TODO check if all coordinates visible on the screen then make a photo and save bitmap
+    val testCoordinates = arrayListOf<LatLng>(
+            LatLng(52.229676, 21.012229),
+            LatLng(52.230785, 21.010147),
+            LatLng(52.231776, 21.005225),
+            LatLng(52.228824, 21.005633),
+            LatLng(52.118367, 21.101279),
+            LatLng(52.199035, 20.841041)
+    )
 
     lateinit var listOfGeoPoints: ArrayList<Location>
     lateinit var mapFragment: SupportMapFragment
@@ -106,13 +119,14 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_noise_map, container, false)
+        //testImage = view.findViewById(R.id.test_image)
         mapFragment = childFragmentManager.findFragmentById((R.id.map_new)) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         val zoomLocationButton = view.findViewById<FloatingActionButton>(R.id.fab_loc)
         zoomLocationButton.setOnClickListener {
             val latlng = LatLng(52.1518944, 21.0288875)
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 12.0f))
+            moveCameraToLocation(latlng)
         }
 
         addMeasurementButton = view.findViewById(R.id.fab_add)
@@ -129,7 +143,6 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
 
         return view
     }
-
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == MAPS_THEME_KEY) {
@@ -179,6 +192,7 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
                 .setCancelable(false)
                 .setPositiveButton("Yes", { dialog, which ->
                     addNewRide()
+                    //testImage.setImageBitmap(createPolylineImage(testCoordinates))
                     addMeasurementButton.setImageDrawable(resources.getDrawable(android.R.drawable.ic_input_add))
                     isRideActive = false
                     dialog.cancel()
@@ -230,7 +244,6 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
 
         }
     }
-
 
     fun setupLiveData() {
         val firebaseViewModel = ViewModelProviders.of(this)
@@ -294,11 +307,11 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
     fun addNewRide() {
         val rideId = PushRideDataHelper.REF.push().key
         val ride = RideModel(123456,
-        "name",
-        "cycling",
-        100,
-        0,
-        0)
+                "name",
+                "cycling",
+                100,
+                0,
+                0)
         PushRideDataHelper.REF.child(rideId).setValue(ride) { error, key ->
             if (error != null) {
                 Log.e(PushRideDataHelper.TAG, "Error: $error.Ride was NOT SAVED on the server")
@@ -308,9 +321,60 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
         }
     }
 
+    fun createPolylineImage(coordinates: ArrayList<LatLng>): Bitmap {
+        val bitmap = Bitmap.createBitmap(mapFragment.view!!.width, mapFragment.view!!.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val paint = Paint()
+        paint.color = activity.getColor(R.color.secondaryTextColor)
+        paint.strokeWidth = 10F
+        paint.isDither = true
+        paint.style = Paint.Style.STROKE
+        paint.strokeJoin = Paint.Join.ROUND
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.isAntiAlias = true
+
+        // check if all points visible
+        // TODO test it
+        makeAllPointsVisible(coordinates)
+
+        for (i in 0..coordinates.size - 2) {
+            val firstLocation = coordinates[i]
+            val secondLocation = coordinates[i + 1]
+            canvas.drawLine(latLngToPoint(firstLocation).x.toFloat(),
+                    latLngToPoint(firstLocation).y.toFloat(),
+                    latLngToPoint(secondLocation).x.toFloat(),
+                    latLngToPoint(secondLocation).y.toFloat(),
+                    paint)
+
+        }
+        return bitmap
+    }
+
+    fun latLngToPoint(latLng: LatLng): Point {
+        val projection = mMap.projection
+        return projection.toScreenLocation(latLng)
+    }
+
+    fun isPointVisible(latLng: LatLng): Boolean {
+        val visibleArea = mMap.projection.visibleRegion.latLngBounds
+        return visibleArea.contains(latLng)
+    }
+
+    fun makeAllPointsVisible(pointList: ArrayList<LatLng>){
+        for (point in pointList) {
+            if (!isPointVisible(point)){
+                CameraUpdateFactory.zoomOut()
+                makeAllPointsVisible(pointList)
+            }
+        }
+    }
+
+    fun moveCameraToLocation(latLng: LatLng){
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f))
+    }
 
     /**
-     * This interface must be implemented by activities that contain this
+     * This interface must be implemented by activities that contain th is
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.

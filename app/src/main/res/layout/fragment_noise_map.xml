@@ -79,6 +79,11 @@
             android:paddingTop="100dp"
             android:textSize="20sp" />
 
+        <!--<ImageView-->
+            <!--android:id="@+id/test_image"-->
+            <!--android:layout_width="500dp"-->
+            <!--android:layout_height="500dp" />-->
+
     </RelativeLayout>
 
 
