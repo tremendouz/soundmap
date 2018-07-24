@@ -8,6 +8,9 @@ import android.content.SharedPreferences
 import android.graphics.*
 import android.location.Geocoder
 import android.location.Location
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -48,7 +51,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import org.reactivestreams.Publisher
+import java.util.*
+import kotlin.concurrent.thread
+import kotlin.experimental.and
+import kotlin.math.abs
 
 
 /**
@@ -130,12 +139,15 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
         }
 
         addMeasurementButton = view.findViewById(R.id.fab_add)
+//        addMeasurementButton.setOnClickListener {
+//            if (!isRideActive) {
+//                showAddMeasurementDialog()
+//            } else {
+//                showStopMeasurement()
+//            }
+//        }
         addMeasurementButton.setOnClickListener {
-            if (!isRideActive) {
-                showAddMeasurementDialog()
-            } else {
-                showStopMeasurement()
-            }
+            testDb()
         }
 
         val textV = view.findViewById<TextView>(R.id.myTextProgress)
@@ -360,18 +372,188 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
         return visibleArea.contains(latLng)
     }
 
-    fun makeAllPointsVisible(pointList: ArrayList<LatLng>){
+    fun makeAllPointsVisible(pointList: ArrayList<LatLng>) {
         for (point in pointList) {
-            if (!isPointVisible(point)){
+            if (!isPointVisible(point)) {
                 CameraUpdateFactory.zoomOut()
                 makeAllPointsVisible(pointList)
             }
         }
     }
 
-    fun moveCameraToLocation(latLng: LatLng){
+    fun moveCameraToLocation(latLng: LatLng) {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12.0f))
     }
+
+    // TMP MEASURE
+
+    fun testDb() {
+        val SAMPLE_RATE = 44100
+        val CHANNEL = AudioFormat.CHANNEL_IN_MONO
+        val ENCODING = AudioFormat.ENCODING_PCM_16BIT
+        val SOURCE = MediaRecorder.AudioSource.DEFAULT
+
+        val dB: Double
+        val average = 0.0
+        val dbSumTotal = 0.0
+        val instant = 0.0
+        //val bufferSize = 8192
+        val bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT)
+
+        //val recorder = AudioRecord(SOURCE, SAMPLE_RATE, CHANNEL, ENCODING, bufferSize)
+        val recorder = AudioRecord(MediaRecorder.AudioSource.DEFAULT, SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+
+        val buffer = ShortArray(bufferSize)
+
+        var isRecording = true
+        var current = 0
+        recorder.startRecording()
+        launch {
+            delay(1000L)
+            isRecording = false
+        }
+        thread {
+            Log.d(TAG, "Recording STARTED")
+            var counter = 0
+            while (isRecording) {
+                val xlen = recorder.read(buffer, 0, bufferSize)
+               // Log.d("Elo", "Max buffer ${buffer.max()}")
+                //val new_buffer = buffer
+//                for (i in 0 until xlen) {
+//                    if (buffer[i] < 0) {
+//                        //Log.d(TAG, "WTF probka mniejsza od 0")
+//                    } else {
+//                        //Log.d(TAG, "${buffer[i]}")
+//                        if (buffer[i] > current) {
+//                            current = buffer[i].toInt()
+//                            //Log.d(TAG, "MAX $current")
+//
+//                        }
+//                    }
+//                }
+                //Log.d(TAG, "${Arrays.toString(buffer)}")
+                val result = filterShortArray(buffer)
+                counter += 1
+                //Log.d(TAG, "Max RMS: $result")
+            }
+
+            recorder.stop()
+            recorder.release()
+//            val testar = shortArrayOf(1, 2, 5, 1107, 6526, 9759, 13711, 16295, 20985, 27061, 32767).toDouble()
+//            val testarfail = shortArrayOf(-1, -2, -5, -1107, -6526, -9759, -13711, -16295, -20985, -27061, -32767).toDouble()
+//            Log.d(TAG, "${Arrays.toString(testar)}")
+//            Log.d(TAG, "${Arrays.toString(testarfail)}")
+            Log.d(TAG, "Stopped recording")
+            Log.d(TAG, " counter $counter")
+
+        }
+
+
+    }
+
+
+    fun bufferResults(){
+
+    }
+
+    fun DoubleArray.absmin(): Double{
+        var min :Double = abs(this[0])
+        for (i in 0 until this.size) {
+            if (min > abs(this[i]) && abs(this[i]) != 0.0) {
+                min = abs(this[i])
+            }
+        }
+        return min
+    }
+
+
+
+    fun filterShortArray(input: ShortArray): Double {
+        val B_COEFFICIENT = doubleArrayOf(0.169994948147430,
+                0.280415310498794,
+                -1.120574766348363,
+                0.131562559965936,
+                0.974153561246036,
+                -0.282740857326553,
+                -0.152810756202003)
+        val A_COEFFICIENT = doubleArrayOf(1.00000000000000000,
+                -2.12979364760736134,
+                0.42996125885751674,
+                1.62132698199721426,
+                -0.96669962900852902,
+                0.00121015844426781,
+                0.04400300696788968)
+        //Log.d(TAG, "MIN ${input.toDouble().absmin()}")
+        //Log.d(TAG, "MAX ${input.toDouble().max()}")
+        val doubleArray = applyWeightingFilter(A_COEFFICIENT, B_COEFFICIENT, input.toDouble())
+
+        //Log.d(TAG, "ABSMIN ${doubleArray.absmin()}")
+        //Log.d(TAG, "MIN ${doubleArray.min()}")
+        //Log.d(TAG, "MAX ${doubleArray.max()}")
+        //Log.d(TAG, "test test ${Arrays.toString(doubleArray)}")
+        // Log.d(TAG, "MAX data ${input.max() }}")
+//        for(i in 0 until doubleArray.size){
+//            Log.d(TAG, "${doubleArray[i]}")
+//        }
+        var sum = 0.0
+        for (item in doubleArray) {
+            sum += item * item
+        }
+
+//
+//        --- TU JUZ WYNIK -----------
+        val rms = 20 * Math.log10(Math.sqrt(sum / doubleArray.size))
+        Log.d(TAG, "RMS: $rms")
+        return rms
+    }
+
+    fun applyWeightingFilter(a: DoubleArray, b: DoubleArray, signal: DoubleArray): DoubleArray {
+
+        val result = DoubleArray(signal.size)
+        for (i in 0 until signal.size) {
+            var tmp = 0.0
+            for (j in 0 until b.size) {
+                if (i - j < 0) continue
+                tmp += b[j] * signal[i - j]
+            }
+            for (j in 1 until a.size) {
+                if (i - j < 0) continue
+                tmp -= a[j] * result[i - j]
+            }
+            tmp /= a[0]
+            result[i] = tmp
+        }
+        return result
+    }
+
+    fun ShortArray.toDouble(): DoubleArray {
+        val doubleArray = DoubleArray(this.size)
+        for (i in 0 until this.size) {
+            //doubleArray[i] = this[i].toUInt().toDouble()
+            doubleArray[i] = this[i].toDouble()
+        }
+        return doubleArray
+    }
+
+    fun ShortArray.toUInt(): IntArray {
+        val uintArray = IntArray(this.size)
+        for (i in 0 until this.size) {
+            uintArray[i] = this[i].toUInt()
+        }
+        return uintArray
+    }
+
+    fun Short.toUInt() = toInt() and 0xffff
+
+
+//    fun Short.toUInt(): Int {
+//        return this.toInt() and 0xffff
+//    }
+
+    // END TMP
 
     /**
      * This interface must be implemented by activities that contain th is
