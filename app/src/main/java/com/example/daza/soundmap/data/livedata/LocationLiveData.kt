@@ -11,8 +11,8 @@ import com.google.android.gms.location.*
  * Created by daza on 08.04.18.
  */
 class LocationLiveData(val context: Context) : LiveData<Location>() {
-    var LOCATION_REQUEST_INTERVAL: Long = 15000
-    var LOCATION_REQUEST_FASTEST_INTERVAL: Long = 10000
+    var LOCATION_REQUEST_INTERVAL: Long = 5000
+    var LOCATION_REQUEST_FASTEST_INTERVAL: Long = 4000
 
     val TAG = LocationLiveData::class.java.simpleName
 
@@ -32,6 +32,7 @@ class LocationLiveData(val context: Context) : LiveData<Location>() {
     @SuppressWarnings("MissingPermission")
     override fun onActive() {
         super.onActive()
+        Log.d(TAG, "Location listener ACTIVE")
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         setupLocationRequest()
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
