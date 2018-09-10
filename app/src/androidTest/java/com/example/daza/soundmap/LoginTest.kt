@@ -25,7 +25,6 @@ class LoginTest {
 
     val VALID_EMAIL = "test@test.com"
     val VALID_PASSWORD = "testtest"
-
     val idlingRegistry = IdlingRegistry.getInstance()
 
 

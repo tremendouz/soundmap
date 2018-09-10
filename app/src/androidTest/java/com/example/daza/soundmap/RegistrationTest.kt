@@ -26,15 +26,18 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class RegistrationTest {
 
     val invalidEmailString = "example@example..com"
@@ -55,7 +58,7 @@ class RegistrationTest {
 
     @Before
     fun clearAll() {
-        onView(withId(R.id.button_registration)).perform(click())
+        onView(withId(R.id.button_registration)).perform(scrollTo(), click())
         onView(withId(R.id.text_email)).perform(clearText())
         onView(withId(R.id.text_password)).perform(clearText())
         onView(withId(R.id.text_confirm_password)).perform(clearText())
@@ -63,7 +66,8 @@ class RegistrationTest {
 
 
     @Test
-    fun shouldShowTextInputError_afterInvalidEmail() {
+    fun D_shouldShowTextInputError_afterInvalidEmail() {
+
         val resources = InstrumentationRegistry.getTargetContext().resources
         val emailError = resources.getString(R.string.error_input_email)
 
@@ -75,14 +79,14 @@ class RegistrationTest {
     }
 
     @Test
-    fun shouldShowNoTextInputError_afterValidEmail() {
+    fun B_shouldShowNoTextInputError_afterValidEmail() {
         onView(withId(R.id.text_email)).perform(clearText())
         onView(withId(R.id.text_email)).perform(typeText(validEmailString))
         onView(withText(R.string.error_input_email)).check(doesNotExist())
     }
 
     @Test
-    fun shouldEnableButton_afterSuccessfulValidation() {
+    fun C_shouldEnableButton_afterSuccessfulValidation() {
         onView(withId(R.id.text_email))
                 .perform(typeText(validEmailString))
                 .perform(closeSoftKeyboard())
@@ -99,7 +103,7 @@ class RegistrationTest {
     }
 
     @Test
-    fun shouldDisableButton_afterSuccessfulValidation() {
+    fun A_shouldDisableButton_afterSuccessfulValidation() {
         onView(withId(R.id.text_email))
                 .perform(typeText(invalidEmailString))
                 .perform(closeSoftKeyboard())
@@ -116,7 +120,7 @@ class RegistrationTest {
     }
 
     @Test
-    fun shouldRegisterUser_afterSuccessfulValidation() {
+    fun E_shouldRegisterUser_afterSuccessfulValidation() {
         val (validEmailString, validPasswordString) = generateUniqueCredentials()
         val activityResource = WaitForActivityIdlingResource(MainActivity::class.java.name)
 

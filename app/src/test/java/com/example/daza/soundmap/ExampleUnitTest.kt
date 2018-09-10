@@ -1,5 +1,6 @@
 package com.example.daza.soundmap
 
+import com.example.daza.soundmap.utils.CustomFIFO
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +12,20 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun originalAverage_isCorrect() {
+        val fifo = CustomFIFO(10)
+        for (i in 0 until 20){
+            fifo.add(i.toDouble())
+        }
+        assertEquals(fifo.mAvarage(), 14)
+    }
+
+    @Test
+    fun avarage_isCorrect() {
+        val fifo = CustomFIFO.fifoAvarage(10)
+        for (i in 0 until 20){
+            fifo.add(i.toDouble())
+        }
+        assertEquals(fifo.value.toInt(), 14)
     }
 }
