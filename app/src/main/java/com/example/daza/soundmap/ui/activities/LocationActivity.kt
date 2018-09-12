@@ -93,12 +93,12 @@ class LocationActivity : AppCompatActivity(), OnMapReadyCallback {
         val audioMeasureLiveData = ViewModelProviders.of(this).get(MeasurementViewModel::class.java).getAudioLevel(this)
 
 
-        val fireBaseLiveData = firebaseViewModel.getDataSnapshotLiveData()
-        fireBaseLiveData.observe(this, Observer<DataSnapshot> { dataSnapshot ->
-            Log.d(TAG, "QUERY RADIUS: ${firebaseViewModel.geoQuery.radius}")
-            Log.d(TAG, "QUERY CENTER: ${firebaseViewModel.geoQuery.center} ")
-            Log.d(TAG, "LIVE DATA FROM WEB: Data from firebase ${dataSnapshot?.child("noise")}")
-        })
+//        val fireBaseLiveData = firebaseViewModel.getDataSnapshotLiveData()
+//        fireBaseLiveData.observe(this, Observer<DataSnapshot> { dataSnapshot ->
+//            Log.d(TAG, "QUERY RADIUS: ${firebaseViewModel.geoQuery.radius}")
+//            Log.d(TAG, "QUERY CENTER: ${firebaseViewModel.geoQuery.center} ")
+//            Log.d(TAG, "LIVE DATA FROM WEB: Data from firebase ${dataSnapshot?.child("noise")}")
+//        })
 
 
         val locationLiveData = locationViewModel.getLocation(this)
