@@ -4,20 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/alert_input_ride_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:hint="@string/hint_ride">
+    <!--<android.support.design.widget.TextInputLayout-->
+        <!--android:id="@+id/alert_input_ride_name"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:hint="@string/hint_ride">-->
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/alert_text_ride_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
-    </android.support.design.widget.TextInputLayout>
+        <!--<android.support.design.widget.TextInputEditText-->
+            <!--android:id="@+id/alert_text_ride_title"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:inputType="text"-->
+            <!--android:maxLines="1" />-->
+    <!--</android.support.design.widget.TextInputLayout>-->
 
     <RelativeLayout
         android:layout_width="match_parent"

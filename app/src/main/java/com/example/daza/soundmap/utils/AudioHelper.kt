@@ -231,7 +231,8 @@ class AudioHelper(val context: Context) {
 //                }
                 //Log.d(TAG, "${Arrays.toString(buffer)}")
                 val result = filterShortArray(buffer)
-                fifo.add(result)
+                // add fix
+                fifo.add(result + 10)
                 //counter += 1
                 //Log.d(TAG, "Max RMS: $result")
             }
