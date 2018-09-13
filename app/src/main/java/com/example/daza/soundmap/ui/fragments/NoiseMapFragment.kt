@@ -42,6 +42,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.ui.IconGenerator
+import com.google.maps.android.ui.IconGenerator.STYLE_BLUE
+import com.google.maps.android.ui.IconGenerator.STYLE_DEFAULT
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -85,8 +87,10 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
 
     var currentLocation = LatLng(52.1518944, 21.0288875)
 
-    val firebaseViewModel by lazy {ViewModelProviders.of(this)
-    .get(FirebaseQueryViewModel::class.java)}
+    val firebaseViewModel by lazy {
+        ViewModelProviders.of(this)
+                .get(FirebaseQueryViewModel::class.java)
+    }
 
     //lateinit var testImage: ImageView
     //TODO check if all coordinates visible on the screen then make a photo and save bitmap
@@ -127,6 +131,7 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
         listOfGeoPoints = arrayListOf()
 
         iconFactory = IconGenerator(activity)
+
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -267,24 +272,24 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
             val metersPerPx = 0.33 * 156543.03392 * Math.cos(mMap.cameraPosition.target.latitude * Math.PI / 180) / Math.pow(2.0, zoomLevel.toDouble())
             val kilometersPerPixel = metersPerPx / 1000
             var queryRadius = 0.5 * Math.sqrt(MAP_PIXEL_HEIGHT * MAP_PIXEL_HEIGHT + MAP_PIXEL_WIDTH * MAP_PIXEL_WIDTH) * kilometersPerPixel
-            if (queryRadius > 7.73){
+            if (queryRadius > 7.73) {
                 queryRadius = 7.724342242427326
             }
             firebaseViewModel.fireRadius = queryRadius
             firebaseViewModel.geoQuery.center = GeoLocation(mMap.cameraPosition.target.latitude, mMap.cameraPosition.target.longitude)
             Log.d("Radius", "${queryRadius}")
-            Log.d("Radius", "${ firebaseViewModel.geoQuery.center}")
+            Log.d("Radius", "${firebaseViewModel.geoQuery.center}")
 
 
         }
     }
 
-    fun updateProgress(db: Int){
+    fun updateProgress(db: Int) {
         textV.text = db.toString() + " dBA"
         progressBar.secondaryProgress = db
     }
 
-    fun addIcon(iconFactory: IconGenerator, text: CharSequence, position: LatLng){
+    fun addIcon(iconFactory: IconGenerator, text: CharSequence, position: LatLng) {
         val markerOptions = MarkerOptions()
                 .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text)))
                 .position(position)
@@ -294,63 +299,44 @@ class NoiseMapFragment : Fragment(), OnMapReadyCallback, SharedPreferences.OnSha
     }
 
 
-    fun turnOffdBSync(){
+    fun turnOffdBSync() {
         firebaseViewModel.getDataSnapshotLiveData().removeObservers(this)
     }
 
-    fun turnOndBSync(){
+    fun turnOndBSync() {
         firebaseViewModel.getDataSnapshotLiveData()
                 .observe(this, Observer<Pair<DataSnapshot, GeoLocation>> { pair ->
                     val dataSnapshot = pair!!.first
                     Log.d(TAG, "QUERY RADIUS: ${firebaseViewModel.geoQuery.radius}")
                     Log.d(TAG, "QUERY CENTER: ${firebaseViewModel.geoQuery.center} ")
                     Log.d(TAG, "LIVE DATA FROM WEB: Data from firebase ${dataSnapshot?.child("noise")!!.value} ${pair!!.second} ")
+                    iconFactory.setStyle(STYLE_BLUE)
+                    addIcon(iconFactory, dataSnapshot?.child("noise")!!.value.toString() + "dBA", LatLng(pair.second.latitude, pair.second.longitude))
 
                 })
     }
 
     fun setupLiveData() {
-//        val firebaseViewModel = ViewModelProviders.of(this)
-//                .get(FirebaseQueryViewModel::class.java)
-//        firebaseViewModel.getDataSnapshotLiveData()
-//            .observe(this, Observer<DataSnapshot> { dataSnapshot ->
-//            Log.d(TAG, "QUERY RADIUS: ${firebaseViewModel.geoQuery.radius}")
-//            Log.d(TAG, "QUERY CENTER: ${firebaseViewModel.geoQuery.center} ")
-//            Log.d(TAG, "LIVE DATA FROM WEB: Data from firebase ${dataSnapshot?.child("noise")}")
-//        })
 
         turnOndBSync()
-
 
         val locationViewModel = ViewModelProviders.of(this)
                 .get(LocationViewModel::class.java)
         val locationLiveData = locationViewModel.getLocation(activity)
-       // locationLiveData.observe(this, Observer { location -> Log.d("LOCATION", "${location}") })
 
-        // to dziala i wysyla log
         val audioViewModel = ViewModelProviders.of(this)
                 .get(MeasurementViewModel::class.java)
         val audioLiveData = audioViewModel.getAudioLevel(activity)
-        audioLiveData.observe(this, Observer { pomiar -> updateProgress(pomiar!!)})
+        audioLiveData.observe(this, Observer { pomiar -> updateProgress(pomiar!!) })
 
         val audioLocationLiveData = transformLiveData(locationLiveData, audioLiveData)
                 .observe(this,
                         Observer<Pair<Location, Int>> { pair ->
-//                            if (!listOfGeoPoints.contains(pair!!.first)) {
-//                                listOfGeoPoints.add(pair.first)
-//                            }
-//                            peformDirectionsApiCall(ORIGIN, DESTINATION, WAYPOINTS, DIRECTION_MODE)
-//                            Log.d(TAG, "Location list ${listOfGeoPoints.size}")
-                            //updateProgress(pair!!.second)
-                            if(isRideActive){
-                                addIcon(iconFactory, pair!!.second.toString() +" dBA",LatLng(pair?.first!!.latitude, pair?.first?.longitude) )
+                            if (isRideActive) {
+                                iconFactory.setStyle(STYLE_DEFAULT)
+                                addIcon(iconFactory, pair!!.second.toString() + " dBA", LatLng(pair.first.latitude, pair.first.longitude))
                                 firebaseViewModel.pushData(pair.first, pair.second)
                             }
-                            currentLocation = LatLng(pair?.first!!.latitude, pair?.first?.longitude)
-                            firebaseViewModel.geoQuery.center = GeoLocation(pair?.first!!.latitude, pair?.first?.longitude)
-                            Log.d(TAG, "Location: ${pair?.first?.latitude} ${pair?.first?.longitude}")
-                            Log.d("AUDIO AUDIO", "${pair?.second}")
-
                         })
     }
 
